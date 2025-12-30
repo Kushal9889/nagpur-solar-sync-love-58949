@@ -6,6 +6,7 @@ import path from "path";
 import devicesRouter from "./routes/devices";
 import subscriptionsRouter from "./routes/subscriptions";
 import paymentsRouter from "./routes/payments";
+import webhookRouter from "./routes/webhook";
 import usersRouter from "./routes/users";
 import installersRouter from "./routes/installers";
 import documentsRouter from "./routes/documents";
@@ -27,18 +28,13 @@ const port = process.env.PORT || 3000;
 app.use("/devices", devicesRouter);
 app.use("/subscriptions", subscriptionsRouter);
 app.use("/payments", paymentsRouter);
+app.use("/stripe", webhookRouter);
 app.use("/users", usersRouter);
 app.use("/installers", installersRouter);
 app.use("/documents", documentsRouter);
 
 async function start() {
-  const mongoUrl = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/solarbuddy";
-  try {
-    await connectToMongo(mongoUrl);
-    console.log("Connected to MongoDB:", mongoUrl);
-  } catch (err) {
-    console.warn("Failed to connect to MongoDB, starting server anyway:", err);
-  }
+  await connectToMongo();
 
   app.listen(port, () => {
     console.log(`Server listening on ${port}`);
