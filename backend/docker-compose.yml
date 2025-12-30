@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongolocal
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  app:
+    image: node:18
+    container_name: solarbuddy-app
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app:delegated
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/solarbuddy
+      - NODE_ENV=development
+    command: sh -c "npm ci && npm run dev"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
