@@ -46,83 +46,83 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
   }, []);
 
   const requiredDocuments = [
-    { id: 'aadhaar', name: 'Aadhaar Card', required: true, icon: '🆔' },
-    { id: 'pan', name: 'PAN Card', required: true, icon: '📄' },
-    { id: 'electricity-bill', name: 'Electricity Bill', required: true, icon: '⚡' },
-    { id: 'house-tax', name: 'House Tax Receipt', required: false, icon: '🏠' },
-    { id: 'bank-passbook', name: 'Bank Passbook', required: true, icon: '🏦' },
+    { id: 'state-id', name: 'State ID / Driver\'s License', required: true, icon: '🆔' },
+    { id: 'ssn', name: 'SSN (Last 4 Digits)', required: true, icon: '�' },
+    { id: 'utility-bill', name: 'Utility Bill', required: true, icon: '⚡' },
+    { id: 'property-tax', name: 'Property Tax Bill', required: false, icon: '🏠' },
+    { id: 'voided-check', name: 'Voided Check', required: true, icon: '🏦' },
     { id: 'rooftop-photos', name: 'Rooftop Photos', required: true, icon: '📸' },
   ];
 
   const solarPlans = [
     {
       id: 'basic',
-      name: 'Basic (1-2 kW)',
-      range: '₹30,000 - ₹1,00,000',
-      subtitle: 'Post-subsidy price',
-      features: ['1-2 kW capacity', 'Net metering', 'Government subsidies', 'ROI in 3-4 years'],
-      savings: '₹1,800/month',
-      emi: '₹2,500/month'
+      name: 'Basic (4 kW)',
+      range: '$12,000 - $15,000',
+      subtitle: 'Post-incentive price',
+      features: ['4 kW capacity', 'Net metering', 'Federal Tax Credit (30%)', 'ROI in 5-6 years'],
+      savings: '$150/month',
+      emi: '$200/month'
     },
     {
       id: 'standard',
-      name: 'Standard (3-5 kW)',
-      range: '₹60,000 - ₹1,62,000',
-      subtitle: 'Post-subsidy price',
-      features: ['3-5 kW capacity', 'Reduce costs by 80%', 'Tax benefits', 'Green certification'],
+      name: 'Standard (8 kW)',
+      range: '$18,000 - $24,000',
+      subtitle: 'Post-incentive price',
+      features: ['8 kW capacity', 'Reduce costs by 90%', 'Tax benefits', 'Green certification'],
       popular: true,
-      savings: '₹3,200/month',
-      emi: '₹4,200/month'
+      savings: '$300/month',
+      emi: '$350/month'
     },
     {
       id: 'premium',
-      name: 'Premium (6-10 kW)',
-      range: '₹1,02,000 - ₹3,22,000',
-      subtitle: 'Post-subsidy price',
-      features: ['6-10 kW capacity', 'Maximum savings', 'Premium components', 'Extended warranty'],
-      savings: '₹5,500/month',
-      emi: '₹7,800/month'
+      name: 'Premium (12 kW)',
+      range: '$30,000 - $45,000',
+      subtitle: 'Post-incentive price',
+      features: ['12 kW capacity', 'Maximum savings', 'Premium components', 'Extended warranty'],
+      savings: '$450/month',
+      emi: '$500/month'
     }
   ];
 
   const paymentOptions = [
     { 
-      id: 'upi', 
-      name: 'UPI Payment', 
-      icon: <Smartphone className="h-8 w-8" />, 
-      description: 'Paytm, Google Pay, PhonePe',
-      discount: '2% cashback',
+      id: 'ach', 
+      name: 'ACH Transfer', 
+      icon: <Building2 className="h-8 w-8" />, 
+      description: 'Direct bank transfer',
+      discount: 'No fees',
       popular: true
     },
     { 
       id: 'card', 
-      name: 'Card Payment', 
+      name: 'Credit/Debit Card', 
       icon: <CreditCard className="h-8 w-8" />, 
-      description: 'Visa, Mastercard, RuPay',
+      description: 'Visa, Mastercard, Amex',
       discount: '1% cashback'
     },
     { 
-      id: 'netbanking', 
-      name: 'Net Banking', 
-      icon: <Building2 className="h-8 w-8" />, 
-      description: 'All major banks supported',
-      discount: 'Instant processing'
+      id: 'zelle', 
+      name: 'Zelle / Venmo', 
+      icon: <Smartphone className="h-8 w-8" />, 
+      description: 'Instant mobile payment',
+      discount: 'Fast processing'
     },
     { 
-      id: 'emi', 
-      name: 'EMI Options', 
+      id: 'loan', 
+      name: 'Solar Loan', 
       icon: <Banknote className="h-8 w-8" />, 
-      description: 'Pay as per your electricity bill',
-      discount: 'No processing fee',
+      description: 'Low interest financing',
+      discount: 'No money down',
       special: true
     }
   ];
 
   const bankPartners = [
-    { name: 'SBI', rate: '10.5%', processing: 'Free' },
-    { name: 'HDFC', rate: '11.2%', processing: '₹500' },
-    { name: 'ICICI', rate: '11.8%', processing: '₹750' },
-    { name: 'Axis Bank', rate: '12.1%', processing: '₹1000' }
+    { name: 'Chase', rate: '5.99%', processing: 'Free' },
+    { name: 'Bank of America', rate: '6.25%', processing: '$100' },
+    { name: 'Wells Fargo', rate: '6.50%', processing: '$150' },
+    { name: 'Citi', rate: '6.75%', processing: '$200' }
   ];
 
   const handleDocumentUpload = (docId: string) => {
@@ -261,11 +261,11 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                   <div className="bg-[#0F2F26] rounded-xl p-4 border border-green-500/30">
                     <div className="flex items-center gap-2 mb-2">
                       <Gift className="h-5 w-5 text-green-400" />
-                      <h4 className="font-bold text-white">Subsidy Benefit</h4>
+                      <h4 className="font-bold text-white">Federal Tax Credit</h4>
                     </div>
-                    <p className="text-sm text-gray-300 mb-1">Estimated Subsidy Amount</p>
-                    <p className="text-2xl font-bold text-green-400">₹65,000</p>
-                    <p className="text-xs text-gray-400 mt-2">Direct bank transfer within 30-90 days</p>
+                    <p className="text-sm text-gray-300 mb-1">Estimated Tax Credit (30%)</p>
+                    <p className="text-2xl font-bold text-green-400">$9,000</p>
+                    <p className="text-xs text-gray-400 mt-2">Claim on your next tax return</p>
                   </div>
                   <div className="bg-[#0F2F26] rounded-xl p-4 border border-purple-500/30">
                     <div className="flex items-center gap-2 mb-2">
@@ -275,11 +275,11 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                     <div className="flex justify-between items-end">
                       <div>
                         <p className="text-sm text-gray-300 mb-1">Payback Period</p>
-                        <p className="text-2xl font-bold text-purple-400">3.5 Years</p>
+                        <p className="text-2xl font-bold text-purple-400">5.5 Years</p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-300 mb-1">25yr Savings</p>
-                        <p className="text-lg font-bold text-purple-400">₹12.5L</p>
+                        <p className="text-lg font-bold text-purple-400">$50,000</p>
                       </div>
                     </div>
                   </div>
@@ -397,9 +397,9 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                   <div className="relative z-10">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                       <div>
-                        <h4 className="text-xl font-bold mb-2 text-[#FFC107]">Zero Cost EMI Available</h4>
+                        <h4 className="text-xl font-bold mb-2 text-[#FFC107]">$0 Down Solar Loans</h4>
                         <p className="text-white font-medium text-sm max-w-md">
-                          Convert your electricity bill into solar EMI. Pay the same amount you pay for electricity, but own the system!
+                          Replace your electric bill with a lower solar payment. Own your system for less than you pay the utility company!
                         </p>
                       </div>
                       <Button 
@@ -434,7 +434,7 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                   <Award className="h-5 w-5 text-[#FFC107] shrink-0" />
                   <div>
                     <p className="font-semibold text-sm text-white">Top Rated Partner</p>
-                    <p className="text-xs text-gray-400">#1 Solar installer in Nagpur</p>
+                    <p className="text-xs text-gray-400">#1 Solar installer in Boston</p>
                   </div>
                 </div>
                 <div className="flex gap-3">

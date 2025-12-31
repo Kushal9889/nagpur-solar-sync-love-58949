@@ -39,11 +39,11 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
       name: 'Mono Bifacial',
       efficiency: '22%',
       image: '/uploads/Bifacial.png',
-      savings: '₹2,000/month',
+      savings: '$200/month',
       bestFor: 'Residential & Commercial',
       benefits: [
         '20% more output via dual-sided light capture',
-        'Ideal for Nagpur\'s open rooftops',
+        'Ideal for Boston\'s reflective snow',
         'Excellent in reflective environments',
         'Premium efficiency rating'
       ],
@@ -54,11 +54,11 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
       name: 'Monocrystalline',
       efficiency: '21%',
       image: '/uploads/Monocrystalline.png',
-      savings: '₹1,800/month',
+      savings: '$180/month',
       bestFor: 'Residential & Industrial',
       benefits: [
         'High efficiency in small spaces',
-        'Perfect for Chandrapur\'s compact homes',
+        'Perfect for compact city homes',
         'Excellent low-light performance',
         'Long-term reliability'
       ],
@@ -69,7 +69,7 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
       name: 'Polycrystalline',
       efficiency: '18%',
       image: '/uploads/Polycrystalline.png',
-      savings: '₹1,500/month',
+      savings: '$150/month',
       bestFor: 'Commercial & Ground-Mounted',
       benefits: [
         'Cost-effective solution',
@@ -84,7 +84,7 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
       name: 'Thin Film',
       efficiency: '15%',
       image: '/uploads/Thin Film.png',
-      savings: '₹1,200/month',
+      savings: '$120/month',
       bestFor: 'Industrial',
       benefits: [
         'Lightweight and flexible',
@@ -99,69 +99,69 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
       name: 'TOPCon',
       efficiency: '23%',
       image: '/uploads/TOPCon.png',
-      savings: '₹2,200/month',
+      savings: '$220/month',
       bestFor: 'Residential & Commercial',
       benefits: [
         'Cutting-edge technology',
-        'Maximum output in Nagpur\'s heat',
+        'Maximum output in all seasons',
         'Superior temperature coefficient',
         'Future-proof investment'
       ],
-      detailedInfo: 'Tunnel Oxide Passivated Contact technology represents the latest advancement in solar cell design. Offers the highest efficiency with excellent temperature performance, perfect for hot climates like Nagpur.'
+      detailedInfo: 'Tunnel Oxide Passivated Contact technology represents the latest advancement in solar cell design. Offers the highest efficiency with excellent temperature performance, perfect for variable climates like Boston.'
     }
   ];
 
   const brands = [
     { id: 'panasonic', name: 'Panasonic', premium: true },
-    { id: 'luminous', name: 'Luminous', premium: false },
-    { id: 'adani', name: 'Adani Solar', premium: false },
-    { id: 'waaree', name: 'Waaree', premium: false },
-    { id: 'tata', name: 'Tata Solar', premium: true },
-    { id: 'vikram', name: 'Vikram Solar', premium: false }
+    { id: 'lg', name: 'LG Solar', premium: true },
+    { id: 'qcells', name: 'Q Cells', premium: false },
+    { id: 'canadian', name: 'Canadian Solar', premium: false },
+    { id: 'sunpower', name: 'SunPower', premium: true },
+    { id: 'rec', name: 'REC Solar', premium: true }
   ];
 
   const inverters = [
     {
-      id: 'goodwe',
-      name: 'GoodWe',
+      id: 'enphase',
+      name: 'Enphase',
       image: '/uploads/GoodWe.png',
-      price: '₹22,000',
-      features: ['WiFi Monitoring', '10 Year Warranty', 'German Technology']
+      price: '$2,200',
+      features: ['Microinverter', '25 Year Warranty', 'US Technology']
     },
     {
-      id: 'growatt',
-      name: 'Growatt',
+      id: 'solaredge',
+      name: 'SolarEdge',
       image: '/uploads/Growatt.png',
-      price: '₹20,000',
-      features: ['App Control', '5 Year Warranty', 'High Efficiency']
+      price: '$2,000',
+      features: ['Optimizer System', '12 Year Warranty', 'High Efficiency']
     },
     {
-      id: 'polycab',
-      name: 'Polycab',
+      id: 'sma',
+      name: 'SMA',
       image: '/uploads/Polycab.png',
-      price: '₹21,000',
-      features: ['Made in India', '5 Year Warranty', 'Robust Design']
+      price: '$2,100',
+      features: ['German Engineering', '10 Year Warranty', 'Robust Design']
     },
     {
-      id: 'sofar',
-      name: 'Sofar Solar',
+      id: 'fronius',
+      name: 'Fronius',
       image: '/uploads/Sofar Solar.png',
-      price: '₹19,000',
-      features: ['Smart Monitoring', '5 Year Warranty', 'Compact Size']
+      price: '$1,900',
+      features: ['Smart Monitoring', '10 Year Warranty', 'Active Cooling']
     },
     {
-      id: 'solis',
-      name: 'Solis',
+      id: 'tesla',
+      name: 'Tesla',
       image: '/uploads/Solis.png',
-      price: '₹18,000',
-      features: ['Cloud Monitoring', '5 Year Warranty', 'Wide MPPT Range']
+      price: '$1,800',
+      features: ['Integrated Design', '10 Year Warranty', 'Sleek Look']
     },
     {
-      id: 'sungrow',
-      name: 'Sungrow',
+      id: 'generac',
+      name: 'Generac',
       image: '/uploads/Sungrow.png',
-      price: '₹23,000',
-      features: ['Premium Quality', '10 Year Warranty', 'Advanced MPPT']
+      price: '$2,300',
+      features: ['PWRcell System', '10 Year Warranty', 'Battery Ready']
     }
   ];
 

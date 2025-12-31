@@ -67,7 +67,7 @@ const EnhancedCountdownTimer: React.FC = () => {
       </div>
       <div className="text-center mt-4">
         <p className="text-sm text-[#FF6200] font-semibold animate-bounce">
-          🔥 Hurry! Subsidy reduces by ₹5,000 every month! Lock in your 25-year savings now!
+          🔥 Hurry! Incentives reduce by $500 every month! Lock in your 25-year savings now!
         </p>
       </div>
     </div>

@@ -17,8 +17,8 @@ const SelectYourPlanPage: React.FC = () => {
       forHomes: 'Small homes (200–300 units)',
       details: 'Lights, fans, TV, fridge',
       idealFor: '1BHK/2BHK, 2–3 people',
-      price: '₹30K-₹1L',
-      savings: 'Save ₹12,000/year!',
+      price: '$3,000-$6,000',
+      savings: 'Save $1,200/year!',
       features: [
         '2-3 kW system',
         '25-year panel warranty',
@@ -34,8 +34,8 @@ const SelectYourPlanPage: React.FC = () => {
       forHomes: 'Medium homes (300–500 units)',
       details: 'Above + 2 AC, washing machine',
       idealFor: '2–3BHK, 3–5 people',
-      price: '₹60K-₹1.62L',
-      savings: 'Save ₹18,000/year!',
+      price: '$9,000-$15,000',
+      savings: 'Save $2,500/year!',
       features: [
         '3-5 kW system',
         '25-year panel warranty',
@@ -52,8 +52,8 @@ const SelectYourPlanPage: React.FC = () => {
       forHomes: 'Large homes (600–1000 units)',
       details: 'Above + multiple ACs, pumps',
       idealFor: 'Villas, large families',
-      price: '₹1.2L-₹2.5L',
-      savings: 'Save ₹30,000/year!',
+      price: '$18,000-$30,000',
+      savings: 'Save $4,500/year!',
       features: [
         '6-10 kW system',
         '25-year panel warranty',

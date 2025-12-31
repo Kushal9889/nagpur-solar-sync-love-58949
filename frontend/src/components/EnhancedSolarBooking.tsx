@@ -176,7 +176,7 @@ const EnhancedSolarBooking: React.FC = () => {
             <CardContent className="p-8">
               <h3 className="text-3xl font-bold mb-4">Ready to Go Solar?</h3>
               <p className="text-xl text-green-100 mb-6">
-                Join 500+ satisfied customers in Nagpur who are saving money and protecting the environment.
+                Join 500+ satisfied customers in Boston who are saving money and protecting the environment.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 

@@ -104,7 +104,7 @@ const PlantCategoryPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <Sun className="h-8 w-8 text-[#FFC107]" />
               <div>
-                <h1 className="text-2xl font-bold">Maharashtra's #1 Solar Partner</h1>
+                <h1 className="text-2xl font-bold">Massachusetts' #1 Solar Partner</h1>
                 <p className="text-sm text-gray-300">Solar Panda</p>
               </div>
             </div>
@@ -145,10 +145,10 @@ const PlantCategoryPage: React.FC = () => {
                     </div>
                   </div>
                   
-                  <CardTitle className={`text-xl font-bold ${selectedCategory === category.id ? 'text-[#FF6200]' : 'text-[#1A3C34]'}`}>
+                  <CardTitle className={`text-xl font-bold ${selectedCategory === category.id ? 'text-[#FF6200]' : 'text-white'}`}>
                     {category.name}
                   </CardTitle>
-                  <CardDescription className="text-gray-600">
+                  <CardDescription className="text-gray-200">
                     {category.description}
                   </CardDescription>
                 </CardHeader>
@@ -172,7 +172,7 @@ const PlantCategoryPage: React.FC = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-[#1A3C34] flex items-center justify-center gap-2">
                 <Calculator className="h-6 w-6" />
-                Enter Your Monthly Electricity Bill (₹)
+                Enter Your Monthly Electricity Bill ($)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -181,19 +181,19 @@ const PlantCategoryPage: React.FC = () => {
                   <Slider
                     value={[billAmount]}
                     onValueChange={(value) => setBillAmount(value[0])}
-                    min={500}
-                    max={10000}
-                    step={100}
+                    min={50}
+                    max={1000}
+                    step={10}
                     className="w-full"
                   />
                 </div>
                 
                 <div className="text-center">
                   <div className="text-4xl font-bold text-[#1A3C34] mb-2">
-                    ₹{billAmount.toLocaleString()}
+                    ${billAmount.toLocaleString()}
                   </div>
                   <div className="text-lg text-[#FF6200] font-semibold">
-                    Estimated Monthly Savings: ₹{Math.round(billAmount * 0.7).toLocaleString()}
+                    Estimated Monthly Savings: ${Math.round(billAmount * 0.9).toLocaleString()}
                   </div>
                 </div>
               </div>

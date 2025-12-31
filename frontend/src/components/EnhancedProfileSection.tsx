@@ -46,15 +46,15 @@ const EnhancedProfileSection = () => {
   // Mock user data - enhanced with more details
   const userData = {
     name: 'Rajesh Kumar',
-    phone: '+91-9876543210',
+    phone: '+1-555-123-4567',
     email: 'rajesh.kumar@email.com',
-    address: 'Civil Lines, Nagpur, Maharashtra',
-    pincode: '440001',
+    address: 'Beacon Hill, Boston, MA',
+    pincode: '02108',
     joinDate: '15 Jan 2024',
-    totalSavings: '₹45,000',
+    totalSavings: '$4,500',
     systemSize: '5kW',
     installationDate: '25 Feb 2024',
-    monthlyBill: '₹12,500',
+    monthlyBill: '$150',
     roofSize: '1500 sq ft',
     sanctionedLoad: '5 kW',
     memberSince: 'March 2024'
@@ -64,12 +64,12 @@ const EnhancedProfileSection = () => {
     totalReferrals: 3,
     successfulReferrals: 2,
     pendingReferrals: 1,
-    earnings: '₹2,500',
+    earnings: '$250',
     referralCode: 'RAJESH2024',
     referrals: [
-      { name: 'Amit Sharma', status: 'Installed', date: '10 Mar 2024', earning: '₹1,000' },
-      { name: 'Priya Patel', status: 'Installed', date: '22 Mar 2024', earning: '₹1,500' },
-      { name: 'Suresh Jain', status: 'Pending', date: '5 Apr 2024', earning: '₹0' }
+      { name: 'Amit Sharma', status: 'Installed', date: '10 Mar 2024', earning: '$100' },
+      { name: 'Priya Patel', status: 'Installed', date: '22 Mar 2024', earning: '$150' },
+      { name: 'Suresh Jain', status: 'Pending', date: '5 Apr 2024', earning: '$0' }
     ]
   };
 
@@ -82,7 +82,7 @@ const EnhancedProfileSection = () => {
     co2Saved: '8.5 tons',
     treesEquivalent: 212,
     status: 'Active',
-    dailySavings: '₹160',
+    dailySavings: '$5',
     systemPerformance: '98.5% uptime',
     performance: '20 kWh/day'
   };
@@ -90,20 +90,20 @@ const EnhancedProfileSection = () => {
   const bookingHistory = [
     { 
       id: 'BK001', 
-      company: 'Waaree Solar Solutions',
+      company: 'SunPower Solutions',
       service: 'Residential • 5 kW', 
-      date: '15/03/2024', 
+      date: '03/15/2024', 
       status: 'Completed', 
-      amount: '₹2,75,000',
+      amount: '$27,500',
       action: 'View 3D Report'
     },
     { 
       id: 'BK002', 
-      company: 'Tata Power Solar',
+      company: 'Tesla Energy',
       service: 'Commercial • 25 kW', 
       date: '20/03/2024', 
       status: 'In Progress', 
-      amount: '₹12,50,000',
+      amount: '$125,000',
       action: ''
     }
   ];
@@ -143,8 +143,8 @@ const EnhancedProfileSection = () => {
   const communityImpact = {
     users: '1,247',
     co2Saved: '156.7',
-    communitySavings: '₹45.7L',
-    leadingCity: 'Nagpur'
+    communitySavings: '$4.5M',
+    leadingCity: 'Boston'
   };
 
   return (
@@ -242,7 +242,7 @@ const EnhancedProfileSection = () => {
                 <div className="text-sm">Bookings</div>
               </div>
               <div className="text-center bg-white/20 p-3 rounded-lg">
-                <div className="text-2xl font-bold">₹45,000</div>
+                <div className="text-2xl font-bold">$4,500</div>
                 <div className="text-sm">Total Savings</div>
               </div>
               <div className="text-center bg-white/20 p-3 rounded-lg">
@@ -413,13 +413,13 @@ const EnhancedProfileSection = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-lg font-bold text-blue-600">Daily Savings</div>
-                    <div className="text-2xl font-semibold text-green-600">+₹160</div>
-                    <div className="text-sm text-gray-600">₹160/day</div>
+                    <div className="text-2xl font-semibold text-green-600">+$5</div>
+                    <div className="text-sm text-gray-600">$5/day</div>
                   </div>
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-lg font-bold text-blue-600">Monthly Savings</div>
-                    <div className="text-2xl font-semibold text-green-600">+₹4,800</div>
-                    <div className="text-sm text-gray-600">₹4,800/month</div>
+                    <div className="text-2xl font-semibold text-green-600">+$150</div>
+                    <div className="text-sm text-gray-600">$150/month</div>
                   </div>
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-lg font-bold text-blue-600">System Performance</div>
@@ -458,7 +458,7 @@ const EnhancedProfileSection = () => {
                   </div>
                   <div className="bg-green-50 p-4 rounded-lg">
                     <div className="text-sm text-gray-600 mb-2">Total Earnings</div>
-                    <div className="text-3xl font-bold text-green-600 mb-2">₹2,500</div>
+                    <div className="text-3xl font-bold text-green-600 mb-2">$250</div>
                     <div className="text-sm text-gray-600">From 3 referrals</div>
                   </div>
                 </div>
@@ -473,17 +473,17 @@ const EnhancedProfileSection = () => {
                         <div className="text-sm text-gray-600">Amazon Gift Card</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold">₹1,000</div>
+                        <div className="text-lg font-bold">$100</div>
                         <Badge className="bg-green-100 text-green-800">Earned</Badge>
                       </div>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-white rounded border">
                       <div>
                         <div className="font-medium">3 Referrals</div>
-                        <div className="text-sm text-gray-600">Flipkart Gift Card</div>
+                        <div className="text-sm text-gray-600">Home Depot Gift Card</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold">₹2,500</div>
+                        <div className="text-lg font-bold">$250</div>
                         <Badge className="bg-green-100 text-green-800">Earned</Badge>
                       </div>
                     </div>
@@ -591,7 +591,7 @@ const EnhancedProfileSection = () => {
                     <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          {booking.company.includes('Waaree') ? '🏠' : '🏢'}
+                          {booking.company.includes('SunPower') ? '🏠' : '🏢'}
                         </div>
                         <div>
                           <p className="font-medium">{booking.company}</p>

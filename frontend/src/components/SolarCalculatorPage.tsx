@@ -10,7 +10,7 @@ import { Calculator, Sun, Zap, TrendingUp, Users, Award } from "lucide-react";
 
 const SolarCalculatorPage: React.FC = () => {
   const navigate = useNavigate();
-  const [monthlyBill, setMonthlyBill] = useState([3000]);
+  const [monthlyBill, setMonthlyBill] = useState([150]);
   const [roofArea, setRoofArea] = useState('');
   const [location, setLocation] = useState('');
   const [results, setResults] = useState<any>(null);
@@ -39,7 +39,7 @@ const SolarCalculatorPage: React.FC = () => {
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">Solar Calculator</h1>
-          <p className="text-xl text-gray-200">Calculate your solar potential and savings</p>
+          <p className="text-xl text-gray-200">Calculate your solar potential and savings in Massachusetts</p>
         </div>
 
         <Card className="bg-white shadow-2xl">
@@ -56,18 +56,18 @@ const SolarCalculatorPage: React.FC = () => {
           <CardContent className="p-8 space-y-6">
             <div>
               <Label className="text-lg font-semibold text-[#1A3C34] mb-4 block">
-                Monthly Electricity Bill (₹)
+                Monthly Electricity Bill ($)
               </Label>
               <Slider
                 value={monthlyBill}
                 onValueChange={setMonthlyBill}
-                min={1000}
-                max={20000}
-                step={500}
+                min={50}
+                max={1000}
+                step={10}
                 className="w-full mb-4"
               />
               <div className="text-center">
-                <span className="text-3xl font-bold text-[#1A3C34]">₹{monthlyBill[0].toLocaleString()}</span>
+                <span className="text-3xl font-bold text-[#1A3C34]">${monthlyBill[0].toLocaleString()}</span>
               </div>
             </div>
 
@@ -94,7 +94,7 @@ const SolarCalculatorPage: React.FC = () => {
                   id="location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g., Nagpur"
+                  placeholder="e.g., Boston"
                   className="mt-2"
                 />
               </div>
@@ -125,7 +125,7 @@ const SolarCalculatorPage: React.FC = () => {
                       <TrendingUp className="h-5 w-5 text-green-500" />
                       <span className="font-semibold">Annual Savings</span>
                     </div>
-                    <div className="text-2xl font-bold text-green-600">₹{results.annualSavings.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-green-600">${results.annualSavings.toLocaleString()}</div>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg shadow">
@@ -133,21 +133,21 @@ const SolarCalculatorPage: React.FC = () => {
                       <Zap className="h-5 w-5 text-blue-500" />
                       <span className="font-semibold">System Cost</span>
                     </div>
-                    <div className="text-2xl font-bold text-[#1A3C34]">₹{results.systemCost.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-[#1A3C34]">${results.systemCost.toLocaleString()}</div>
                   </div>
                   
                   <div className="bg-white p-4 rounded-lg shadow">
                     <div className="flex items-center gap-2 mb-2">
                       <Award className="h-5 w-5 text-orange-500" />
-                      <span className="font-semibold">Government Subsidy</span>
+                      <span className="font-semibold">Federal Tax Credit (30%)</span>
                     </div>
-                    <div className="text-2xl font-bold text-orange-600">₹{results.subsidyAmount.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-orange-600">${results.subsidyAmount.toLocaleString()}</div>
                   </div>
                 </div>
                 
                 <div className="mt-6 p-4 bg-[#1A3C34] text-white rounded-lg text-center">
-                  <div className="text-lg mb-2">Final Cost After Subsidy</div>
-                  <div className="text-3xl font-bold text-[#FFC107]">₹{results.finalCost.toLocaleString()}</div>
+                  <div className="text-lg mb-2">Final Cost After Tax Credit</div>
+                  <div className="text-3xl font-bold text-[#FFC107]">${results.finalCost.toLocaleString()}</div>
                   <div className="text-sm mt-2">Payback Period: {results.paybackYears} years</div>
                 </div>
                 

@@ -12,19 +12,19 @@ const HomePage: React.FC = () => {
   const features = [{
     icon: Zap,
     title: 'Smart Solar Calculator',
-    description: 'AI-powered calculator to estimate your solar potential and government subsidies'
+    description: 'AI-powered calculator to estimate your solar potential and federal tax credits'
   }, {
     icon: Users,
     title: 'Verified Dealers',
-    description: 'Connect with MSEDCL empanelled dealers in Nagpur & Chandrapur'
+    description: 'Connect with Eversource approved dealers in Boston & Massachusetts'
   }, {
     icon: Shield,
     title: 'Quality Assurance',
-    description: '5-year warranty and certified installations by trusted professionals'
+    description: '25-year warranty and certified installations by trusted professionals'
   }, {
     icon: Award,
-    title: 'Government Subsidies',
-    description: 'Get up to ₹78,000 subsidy on 3kW solar systems through PM-KUSUM scheme'
+    title: 'Government Incentives',
+    description: 'Get up to 30% Federal Tax Credit on residential solar systems'
   }];
   const stats = [{
     label: 'Happy Customers',
@@ -47,9 +47,9 @@ const HomePage: React.FC = () => {
     id: 'residential',
     title: 'Residential Solar',
     subtitle: 'Perfect for homes and small properties',
-    savings: 'Save ₹18,000/year',
-    totalSavings: '25-Year Total Savings: ₹4.5L',
-    features: ['3-10 kW systems', 'Rooftop installation', 'Up to ₹78,000 subsidy', 'Net metering benefits'],
+    savings: 'Save $1,800/year',
+    totalSavings: '25-Year Total Savings: $45,000',
+    features: ['3-10 kW systems', 'Rooftop installation', '30% Federal Tax Credit', 'Net metering benefits'],
     icon: Home,
     color: 'from-blue-500 to-blue-600',
     badge: 'Only 52 slots left this month!',
@@ -58,8 +58,8 @@ const HomePage: React.FC = () => {
     id: 'commercial',
     title: 'Commercial Solar',
     subtitle: 'Smart solutions for businesses',
-    savings: 'Save ₹25,000/month',
-    totalSavings: '25-Year Total Savings: ₹7.5L',
+    savings: 'Save $2,500/month',
+    totalSavings: '25-Year Total Savings: $750,000',
     features: ['25-100 kW systems', 'Building-integrated solutions', 'CAPEX/OPEX models', 'Energy savings guarantee'],
     icon: Building,
     color: 'from-green-500 to-green-600',
@@ -69,8 +69,8 @@ const HomePage: React.FC = () => {
     id: 'industrial',
     title: 'Industrial Solar',
     subtitle: 'Large-scale power for industries',
-    savings: 'Save ₹2,00,000/month',
-    totalSavings: '25-Year Total Savings: ₹50L',
+    savings: 'Save $20,000/month',
+    totalSavings: '25-Year Total Savings: $6,000,000',
     features: ['100kW+ systems', 'Ground/rooftop mounting', 'Commercial financing', 'Energy management systems'],
     icon: Factory,
     color: 'from-purple-500 to-purple-600',
@@ -80,8 +80,8 @@ const HomePage: React.FC = () => {
     id: 'ground-mounted',
     title: 'Ground-Mounted Solar',
     subtitle: 'Massive solar farms and installations',
-    savings: 'Save ₹5,00,000/month',
-    totalSavings: '25-Year Total Savings: ₹1.5Cr',
+    savings: 'Save $50,000/month',
+    totalSavings: '25-Year Total Savings: $15,000,000',
     features: ['500kW+ systems', 'Open land installation', 'Solar tracking systems', 'Grid-scale solutions'],
     icon: Mountain,
     color: 'from-orange-500 to-orange-600',
@@ -107,23 +107,23 @@ const HomePage: React.FC = () => {
   }, {
     type: 'photo',
     title: 'Before/After Installation',
-    description: 'Before transformation in Nagpur'
+    description: 'Before transformation in Boston'
   }, {
     type: 'video',
     title: 'Customer Success Stories',
     duration: '3:45',
-    description: 'Real testimonials from Nagpur families'
+    description: 'Real testimonials from Massachusetts families'
   }, {
     type: 'photo',
     title: 'Happy Customer Family',
-    description: 'Saving family deals 12500/month'
+    description: 'Saving family deals $150/month'
   }];
   return <div className="space-y-16">
       {/* Green Banner */}
       <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-green-900 py-2 px-4 text-center text-xs sm:text-sm font-semibold relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 relative z-10">
-          <span className="animate-pulse">🔥 Join 98,000+ families saving ₹18,000/year with solar!</span>
+          <span className="animate-pulse">🔥 Join 98,000+ families saving $1,800/year with solar!</span>
           <Button size="sm" onClick={() => navigate('/select-plan')} className="bg-green-800 text-white hover:bg-green-900 text-xs px-3 py-1 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 animate-pulse whitespace-nowrap">
             Claim Your Free Quote Now
           </Button>
@@ -137,12 +137,12 @@ const HomePage: React.FC = () => {
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">
             Transform Your Home with <span className="text-orange-600">Solar</span>
           </h1>
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-600 mb-6">Save ₹1 Lakh / Yr for 25 Years!</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-600 mb-6">Save $100,000 / Yr for 25 Years!</h2>
           <p className="text-base sm:text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
-            Join 98,000+ Smarter Families Who Saves 1 Lakh/ Yr with Solar!
+            Join 98,000+ Smarter Families Who Saves $100,000/ Yr with Solar!
           </p>
           <p className="text-sm sm:text-md text-gray-600 mb-8 max-w-3xl mx-auto">
-            <span className="font-bold text-red-600">Zero Investment Stress!</span> GET UP TO ₹78,000 government subsidy, 5-year complete warranty, and lock in your 25-year solar future today.
+            <span className="font-bold text-red-600">Zero Investment Stress!</span> GET UP TO 30% Federal Tax Credit, 25-year complete warranty, and lock in your 25-year solar future today.
           </p>
           <p className="text-gray-600 mb-8 text-xs sm:text-sm font-medium max-w-3xl mx-auto">Why Choose Solar? No upfront investment, Pay your Bill amount to us - We pay your entire bill for next 25 YRS !</p>
 
@@ -155,7 +155,7 @@ const HomePage: React.FC = () => {
               98k+ Families Saving Big!
             </div>
             <div className="bg-blue-600 text-white px-4 py-2 rounded-full font-bold text-sm sm:text-base" role="listitem">
-              🏆 MNRE Certified
+              🏆 NABCEP Certified
             </div>
           </div>
 
@@ -301,7 +301,7 @@ const HomePage: React.FC = () => {
           <p className="text-gray-800 text-lg mb-6">
             Join 98,000+ Happy Families Who Locked in 25-Year Solar Savings
           </p>
-          <p className="text-red-700 font-semibold mb-8">🔥 Your Neighbours paid only 3 lakhs... and Saved ₹25 lakhs. What are you waiting for?</p>
+          <p className="text-red-700 font-semibold mb-8">🔥 Your Neighbours paid only $30,000... and Saved $250,000. What are you waiting for?</p>
           <Button size="lg" className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-12 py-4 text-xl font-bold shadow-2xl transform hover:scale-105 transition-all duration-300" onClick={() => navigate('/booking')}>
             Secure Your 25-Year Solar Future Now!
           </Button>
@@ -311,10 +311,10 @@ const HomePage: React.FC = () => {
       {/* Premium Solar Brands Section */}
       <section className="py-12 text-center text-red-950">
         <h3 className="text-3xl font-bold text-white mb-4">Premium Solar Brands We Offer</h3>
-        <p className="text-gray-300 mb-8">Trusted by 98,000+ satisfied customers across Maharashtra </p>
+        <p className="text-gray-300 mb-8">Trusted by 98,000+ satisfied customers across Massachusetts</p>
         
         <div className="flex flex-wrap justify-center gap-6 mb-12">
-          {['Luminous', 'Vikram Solar', 'Panasonic', 'LONGI', 'JA Solar', 'Waaree'].map((brand, index) => <div key={index} className="bg-white p-4 rounded-lg shadow-lg min-w-[120px]">
+          {['Luminous', 'Vikram Solar', 'Panasonic', 'LONGI', 'JA Solar', 'SunPower'].map((brand, index) => <div key={index} className="bg-white p-4 rounded-lg shadow-lg min-w-[120px]">
               <div className="text-gray-600 font-semibold">{brand}</div>
             </div>)}
         </div>
@@ -337,15 +337,15 @@ const HomePage: React.FC = () => {
             }, {
               title: 'Customer Success Stories',
               duration: '3:45',
-              desc: 'Real testimonials from Nagpur families'
+              desc: 'Real testimonials from Massachusetts families'
             }, {
               title: 'Installation Process Time-lapse',
               duration: '1:20',
               desc: 'Watch complete installation in 1 minute'
             }, {
-              title: 'Subsidy Claim Guide',
+              title: 'Tax Credit Guide',
               duration: '4:15',
-              desc: 'Step-by-step subsidy application'
+              desc: 'Step-by-step Federal Tax Credit guide'
             }].map((video, index) => <Card key={index} className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-[#FFC107]/30 hover:border-[#FFC107]">
                   <CardContent className="p-0 relative">
                     <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-t-lg flex items-center justify-center relative overflow-hidden">
@@ -374,10 +374,10 @@ const HomePage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[{
               title: 'Before/After Installation',
-              desc: 'Before transformation in Nagpur'
+              desc: 'Before transformation in Boston'
             }, {
               title: 'Happy Customer Family',
-              desc: 'Saving family deals 12500/month'
+              desc: 'Saving family deals $150/month'
             }, {
               title: 'Installation Progress',
               desc: 'Live installation process'
@@ -427,9 +427,9 @@ const HomePage: React.FC = () => {
       {/* Features Section */}
       <section className="py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-4">Why Choose SolarCleanNagpur?</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Why Choose SolarCleanBoston?</h2>
           <p className="text-gray-300 max-w-2xl mx-auto">
-            We make solar adoption simple, affordable, and trustworthy for every home in Maharashtra.
+            We make solar adoption simple, affordable, and trustworthy for every home in Massachusetts.
           </p>
         </div>
         
@@ -471,7 +471,7 @@ const HomePage: React.FC = () => {
       <section className="py-12 text-center">
         <h3 className="text-2xl font-bold text-white mb-4">Service Areas</h3>
         <div className="flex flex-wrap justify-center gap-4">
-          {['Nagpur', 'Chandrapur', 'Civil Lines', 'Dharampeth', 'Sadar', 'Hingna Road', 'Wardha Road', 'Ballarpur'].map(area => <span key={area} className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+          {['Boston', 'Cambridge', 'Somerville', 'Brookline', 'Newton', 'Quincy', 'Medford', 'Malden'].map(area => <span key={area} className="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
               {area}
             </span>)}
         </div>

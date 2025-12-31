@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Calculator, Zap, IndianRupee } from "lucide-react";
+import { Calculator, Zap, DollarSign } from "lucide-react";
 
 interface CalculatorResult {
   systemSize: number;
@@ -26,15 +26,15 @@ const SolarCalculator: React.FC = () => {
     
     if (roofSqFt && billAmount) {
       // AI-driven calculation logic (simplified)
-      const systemSize = Math.min(Math.max(billAmount / 1000, 3), 5); // 3-5 kW range
-      const totalCost = systemSize * 70000; // ₹70k per kW
-      const subsidy = systemSize * 26000; // ₹26k per kW subsidy
+      const systemSize = Math.min(Math.max(billAmount / 20, 3), 15); // 3-15 kW range
+      const totalCost = systemSize * 3000; // $3000 per kW
+      const subsidy = totalCost * 0.30; // 30% Tax Credit
       const postSubsidyCost = totalCost - subsidy;
-      const monthlySavings = billAmount * 0.8; // 80% bill reduction
+      const monthlySavings = billAmount * 0.9; // 90% bill reduction
       const co2Saved = systemSize * 1.5 * 12; // 1.5 tons CO2 per kW per year
       
       setResult({
-        systemSize,
+        systemSize: parseFloat(systemSize.toFixed(1)),
         subsidy,
         totalCost,
         postSubsidyCost,
@@ -52,7 +52,7 @@ const SolarCalculator: React.FC = () => {
           Solar Subsidy Calculator
         </CardTitle>
         <CardDescription>
-          Calculate your solar system size, subsidies, and savings
+          Calculate your solar system size, tax credits, and savings
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -68,7 +68,7 @@ const SolarCalculator: React.FC = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="monthlyBill">Monthly Electricity Bill (₹)</Label>
+            <Label htmlFor="monthlyBill">Monthly Electricity Bill ($)</Label>
             <Input
               id="monthlyBill"
               type="number"
@@ -94,21 +94,21 @@ const SolarCalculator: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600 flex items-center justify-center">
-                  <IndianRupee className="h-5 w-5" />
+                  <DollarSign className="h-5 w-5" />
                   {result.subsidy.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600">Government Subsidy</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-orange-600 flex items-center justify-center">
-                  <IndianRupee className="h-5 w-5" />
+                  <DollarSign className="h-5 w-5" />
                   {result.postSubsidyCost.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600">Your Investment</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600 flex items-center justify-center">
-                  <IndianRupee className="h-5 w-5" />
+                  <DollarSign className="h-5 w-5" />
                   {result.monthlySavings.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600">Monthly Savings</div>

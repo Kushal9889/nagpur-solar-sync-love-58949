@@ -128,7 +128,7 @@ const EnhancedOnboardingTutorial: React.FC<EnhancedOnboardingTutorialProps> = ({
                   <Gift className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 sm:mb-3 animate-bounce" />
                   <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">🎉 Congratulations!</h3>
                   <p className="text-sm sm:text-base lg:text-lg mb-2 sm:mb-4">You've unlocked your exclusive solar gift!</p>
-                  <p className="text-xs sm:text-sm opacity-80">Get ₹5,000 instant discount + Free consultation</p>
+                  <p className="text-xs sm:text-sm opacity-80">Get $50 instant discount + Free consultation</p>
                 </div>
                 
                 <Button 

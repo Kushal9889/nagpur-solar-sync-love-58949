@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,30 +10,30 @@ const BlogSection: React.FC = () => {
   const articles = [
     {
       id: 1,
-      title: "New Solar Subsidy Scheme Announced for Maharashtra!",
-      excerpt: "Government increases subsidy amount to ₹78,000 for residential solar installations. Learn how to apply and benefit from this new scheme.",
-      content: `The Maharashtra government has announced a significant increase in solar subsidies for residential installations. The new PM-KUSUM scheme now offers up to ₹78,000 subsidy for 3kW solar systems.
+      title: "New Solar Incentives Announced for Massachusetts!",
+      excerpt: "Federal and state incentives now cover up to 40% of residential solar installation costs. Learn how to apply and benefit from these programs.",
+      content: `The Massachusetts government has announced significant incentives for residential solar installations. The Federal Solar Tax Credit (ITC) combined with state SMART program offers substantial savings.
 
 Key Benefits:
-• Increased subsidy amount from ₹40,000 to ₹78,000
-• Simplified application process through online portal
-• Faster approval within 30 days
-• Direct bank transfer of subsidy amount
+• Federal Tax Credit (ITC): 30% of system cost
+• MA SMART Program: Performance-based incentives
+• Net Metering: Earn credits for excess energy
+• Property Tax Exemption: 20-year exemption on added value
 
 Eligibility Criteria:
-• Residential properties only
-• Maximum 3kW capacity per household
-• MSEDCL connection required
-• Property ownership documents mandatory
+• Residential properties in Massachusetts
+• System must be owned (cash or loan)
+• Grid connection required
+• Tax liability sufficient to use credits
 
 How to Apply:
-1. Visit the official MSEDCL portal
-2. Upload required documents
-3. Get technical feasibility approval
-4. Complete installation with empanelled vendor
-5. Apply for subsidy within 6 months
+1. Consult with Solar Panda for eligibility check
+2. Design system and sign contract
+3. We handle all permitting and interconnection applications
+4. Complete installation and inspection
+5. Claim credits on your next tax return
 
-This is a great opportunity for Nagpur and Chandrapur residents to switch to solar energy at reduced costs. Contact Solar Panda for assistance with the complete process.`,
+This is a great opportunity for Boston and Cambridge residents to switch to solar energy at reduced costs. Contact Solar Panda for assistance with the complete process.`,
       image: "/placeholder.svg",
       author: "Solar Policy Team",
       date: "June 08, 2025",
@@ -43,19 +42,19 @@ This is a great opportunity for Nagpur and Chandrapur residents to switch to sol
     },
     {
       id: 2,
-      title: "How Solar Panels Perform During Monsoon Season",
-      excerpt: "Detailed analysis of solar panel efficiency during Maharashtra's monsoon months and tips for maximum output.",
-      content: `Monsoon season in Maharashtra brings concerns about solar panel performance. Here's what you need to know about maintaining efficiency during rainy months.
+      title: "How Solar Panels Perform During Boston Winters",
+      excerpt: "Detailed analysis of solar panel efficiency during Boston's winter months and tips for maximum output.",
+      content: `Winter season in Boston brings concerns about solar panel performance. Here's what you need to know about maintaining efficiency during snowy months.
 
 Performance Facts:
 • Solar panels still generate 10-25% electricity on cloudy days
-• Rain actually helps clean panels naturally
-• Modern panels are waterproof and monsoon-resistant
-• Nagpur gets 300+ sunny days annually
+• Snow actually helps clean panels naturally when it melts
+• Modern panels are waterproof and winter-resistant
+• Boston gets 200+ sunny days annually
 
-Monsoon Maintenance Tips:
-1. Regular cleaning after dust storms
-2. Check for water accumulation
+Winter Maintenance Tips:
+1. Regular cleaning after snow storms
+2. Check for snow accumulation
 3. Trim nearby tree branches
 4. Monitor inverter performance
 5. Keep drainage systems clear
@@ -66,7 +65,7 @@ Expected Output:
 • Rainy days: 5-15% capacity
 • Average monsoon efficiency: 60-70%
 
-Solar Panda provides monsoon-ready installations with proper drainage and mounting systems. Our AMC includes monsoon inspection visits.`,
+Solar Panda provides winter-ready installations with proper drainage and mounting systems. Our AMC includes winter inspection visits.`,
       image: "/placeholder.svg",
       author: "Technical Team",
       date: "June 05, 2025",
@@ -75,35 +74,35 @@ Solar Panda provides monsoon-ready installations with proper drainage and mounti
     },
     {
       id: 3,
-      title: "Success Story: Nagpur Family Saves ₹2 Lakh Annually",
-      excerpt: "Meet the Sharma family from Civil Lines who reduced their electricity bill from ₹15,000 to ₹1,000 per month with solar power.",
-      content: `The Sharma family from Civil Lines, Nagpur, installed a 12kW solar system through Solar Panda and achieved remarkable savings.
+      title: "Success Story: Boston Family Saves $3,000 Annually",
+      excerpt: "Meet the Smith family from Beacon Hill who reduced their electricity bill from $300 to $20 per month with solar power.",
+      content: `The Smith family from Beacon Hill, Boston, installed a 10kW solar system through Solar Panda and achieved remarkable savings.
 
 Before Solar:
-• Monthly electricity bill: ₹15,000
-• Annual electricity cost: ₹1,80,000
+• Monthly electricity bill: $300
+• Annual electricity cost: $3,600
 • Rising tariff concerns
-• Frequent power cuts
+• Frequent rate hikes
 
 After Solar Installation:
-• Monthly electricity bill: ₹1,000
-• Monthly savings: ₹14,000
-• Annual savings: ₹1,68,000
-• Zero power cuts during day
+• Monthly electricity bill: $20
+• Monthly savings: $280
+• Annual savings: $3,360
+• Energy independence
 
 Installation Details:
-• System capacity: 12kW
-• Number of panels: 30 (400W each)
-• Installation cost: ₹7,20,000
-• Government subsidy: ₹78,000
-• Net investment: ₹6,42,000
+• System capacity: 10kW
+• Number of panels: 25 (400W each)
+• Installation cost: $30,000
+• Federal Tax Credit: $9,000
+• Net investment: $21,000
 
 Return on Investment:
-• Payback period: 3.8 years
-• 25-year total savings: ₹42 lakhs
+• Payback period: 6.2 years
+• 25-year total savings: $84,000
 • Environmental impact: 15 tons CO2 saved annually
 
-"Solar Panda made the entire process seamless. From initial consultation to post-installation support, everything was professional and transparent." - Mr. Anil Sharma
+"Solar Panda made the entire process seamless. From initial consultation to post-installation support, everything was professional and transparent." - Mr. John Smith
 
 Ready to start your solar journey? Contact Solar Panda for a free consultation.`,
       image: "/placeholder.svg",
@@ -114,11 +113,11 @@ Ready to start your solar journey? Contact Solar Panda for a free consultation.`
     },
     {
       id: 4,
-      title: "Environmental Impact of Solar Energy in Nagpur",
-      excerpt: "Discover how solar installations in Nagpur are contributing to cleaner air and reduced carbon emissions.",
-      content: `Solar energy adoption in Nagpur is making a significant environmental impact. Here's how your solar installation contributes to a cleaner future.
+      title: "Environmental Impact of Solar Energy in Boston",
+      excerpt: "Discover how solar installations in Boston are contributing to cleaner air and reduced carbon emissions.",
+      content: `Solar energy adoption in Boston is making a significant environmental impact. Here's how your solar installation contributes to a cleaner future.
 
-Nagpur Solar Impact (2024):
+Boston Solar Impact (2024):
 • Total installations: 500+ systems
 • Total capacity: 2,500kW
 • Annual CO2 reduction: 3,750 tons
@@ -128,7 +127,7 @@ Individual Impact (10kW system):
 • Annual CO2 reduction: 15 tons
 • Equivalent to planting 375 trees
 • Pollution reduction: 1,200 kg annually
-• Coal displacement: 7.5 tons/year
+• Fossil fuel displacement: 7.5 tons/year
 
 Air Quality Benefits:
 • Reduced thermal power plant emissions
@@ -139,7 +138,7 @@ Air Quality Benefits:
 Water Conservation:
 • Thermal plants use 3-5 liters water per kWh
 • Solar saves 45,000 liters water annually (10kW system)
-• Crucial for drought-prone Maharashtra
+• Crucial for eco-conscious Massachusetts
 
 Economic Benefits:
 • Reduced healthcare costs due to cleaner air
@@ -147,7 +146,7 @@ Economic Benefits:
 • Energy independence for the state
 • Attraction of green industries
 
-Join the movement! Every solar installation makes Nagpur cleaner and greener. Solar Panda is committed to environmental sustainability.`,
+Join the movement! Every solar installation makes Boston cleaner and greener. Solar Panda is committed to environmental sustainability.`,
       image: "/placeholder.svg",
       author: "Environmental Team",
       date: "May 28, 2025",
@@ -232,7 +231,7 @@ Join the movement! Every solar installation makes Nagpur cleaner and greener. So
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Solar Updates & News</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Stay informed about the latest solar policies, technology updates, and success stories from Nagpur & Chandrapur.
+          Stay informed about the latest solar policies, technology updates, and success stories from Boston & Massachusetts.
         </p>
       </div>
 

@@ -27,9 +27,9 @@ const SolarPlansPage: React.FC = () => {
       subtitle: 'Perfect for small homes',
       icon: Home,
       capacity: '1-2 kW',
-      cost: '₹30K-₹1L',
-      savings: 'Save ₹12,000/year!',
-      total25Year: '₹3L saved over 25 years',
+      cost: '$3,000-$6,000',
+      savings: 'Save $1,200/year!',
+      total25Year: '$30,000 saved over 25 years',
       features: ['1-2 kW system', 'Rooftop installation', 'Basic warranty', 'Net metering'],
       color: 'from-blue-500 to-cyan-500',
       popular: false
@@ -40,9 +40,9 @@ const SolarPlansPage: React.FC = () => {
       subtitle: 'Most popular choice',
       icon: Building,
       capacity: '3-5 kW',
-      cost: '₹60K-₹1.62L',
-      savings: 'Save ₹18,000/year!',
-      total25Year: '₹4.5L saved over 25 years',
+      cost: '$9,000-$15,000',
+      savings: 'Save $2,500/year!',
+      total25Year: '$62,500 saved over 25 years',
       features: ['3-5 kW system', 'Premium panels', '5-year warranty', 'Smart monitoring'],
       color: 'from-green-500 to-emerald-500',
       popular: true
@@ -53,9 +53,9 @@ const SolarPlansPage: React.FC = () => {
       subtitle: 'Maximum savings',
       icon: Factory,
       capacity: '6-10 kW',
-      cost: '₹1.02L-₹3.22L',
-      savings: 'Save ₹25,000/year!',
-      total25Year: '₹6.25L saved over 25 years',
+      cost: '$18,000-$30,000',
+      savings: 'Save $4,500/year!',
+      total25Year: '$112,500 saved over 25 years',
       features: ['6-10 kW system', 'Premium+ panels', '10-year warranty', 'AI optimization'],
       color: 'from-purple-500 to-pink-500',
       popular: false
@@ -207,11 +207,11 @@ const SolarPlansPage: React.FC = () => {
                   <Star className="h-8 w-8 text-black" />
                 </div>
                 <blockquote className="text-xl italic mb-4">
-                  "My family saves ₹15,000/year with Solar Panda! Best decision we ever made for our home."
+                  "My family saves $2,500/year with Solar Panda! Best decision we ever made for our home."
                 </blockquote>
                 <div className="flex items-center justify-center gap-2">
                   <Users className="h-5 w-5" />
-                  <span className="font-semibold">- Rajesh Kumar, Nagpur</span>
+                  <span className="font-semibold">- Robert Smith, Boston</span>
                 </div>
               </CardContent>
             </Card>

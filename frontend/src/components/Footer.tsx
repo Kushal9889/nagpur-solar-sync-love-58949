@@ -24,7 +24,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
-    const text = "Transform your home with solar energy in Nagpur! Join 500+ happy customers saving 80% on electricity bills.";
+    const text = "Transform your home with solar energy in Boston! Join 500+ happy customers saving 80% on electricity bills.";
     
     switch (platform) {
       case 'whatsapp':
@@ -60,7 +60,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-semibold">
             <div className="flex items-center gap-2">
               <Award className="h-5 w-5" />
-              <span>MNRE Certified Partner</span>
+              <span>NABCEP Certified Partner</span>
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5" />
@@ -89,14 +89,14 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <div className="space-y-4">
               <p className="text-sm text-gray-200 leading-relaxed">
                 <strong className="text-yellow-400">Your Solar Journey Starts Here!</strong><br/>
-                Join 500+ Nagpur families who chose us and now save ₹3,000+ monthly on electricity bills. 
+                Join 500+ Boston families who chose us and now save $150+ monthly on electricity bills. 
                 <span className="text-yellow-300 font-semibold"> Zero regrets, lifetime satisfaction guaranteed!</span>
               </p>
               
               <div className="bg-green-700 p-4 rounded-lg border-l-4 border-yellow-400">
                 <p className="text-xs text-yellow-200 font-medium">
                   "Finally found exactly what I needed! No hidden costs, complete transparency, 
-                  and the best solar guidance in Maharashtra." - Satisfied Customer
+                  and the best solar guidance in Massachusetts." - Satisfied Customer
                 </p>
               </div>
             </div>
@@ -109,10 +109,10 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </h4>
               <div className="flex flex-wrap gap-2">
                 {[
-                  'MNRE Verified Partner',
-                  'MSEDCL Empanelled',
-                  'ISO 9001:2015 Certified',
-                  'Make in India Approved'
+                  'NABCEP Certified',
+                  'Eversource Approved',
+                  'UL Certified Equipment',
+                  'Made in USA Options'
                 ].map((cert, index) => (
                   <span key={index} className="px-3 py-1 bg-green-600 rounded-full text-xs hover:bg-green-500 transition-colors cursor-pointer">
                     {cert}
@@ -128,7 +128,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <ul className="space-y-3">
               {[
                 { label: '🏠 Home - Your Solar Hub', section: 'home', cta: 'Start Here!' },
-                { label: '⚡ Get Solar Now - Save ₹3000/Month', section: 'booking', cta: 'Popular!' },
+                { label: '⚡ Get Solar Now - Save $150/Month', section: 'booking', cta: 'Popular!' },
                 { label: '👥 About Us - Why 500+ Choose Us', section: 'about', cta: 'Trust' },
                 { label: '📞 Contact - Free Consultation', section: 'contact', cta: 'Free!' },
                 { label: '📊 Your Generation - Track Savings', section: 'generation', cta: 'Monitor' },
@@ -155,7 +155,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <div className="space-y-4">
               <div className="bg-green-700 p-4 rounded-lg">
                 <p className="text-yellow-300 font-semibold text-sm mb-2">
-                  🔥 Limited Time: Only 50 Subsidy Slots Left in Nagpur!
+                  🔥 Limited Time: Only 50 Tax Credit Slots Left in Boston!
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
@@ -164,11 +164,11 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-gray-300">+91-7887627220</span>
+                    <span className="text-sm text-gray-300">+1 (555) 123-4567</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <MapPin className="h-4 w-4 text-yellow-400" />
-                    <span className="text-sm text-gray-300">Serving Nagpur & Chandrapur with Pride</span>
+                    <span className="text-sm text-gray-300">Serving Boston & Greater Massachusetts with Pride</span>
                   </div>
                 </div>
               </div>
@@ -234,7 +234,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-300 text-center md:text-left">
               © 2024 Solar Panda. All rights reserved. | 
-              <span className="text-yellow-400 font-semibold"> Making solar energy accessible to every home in Maharashtra.</span>
+              <span className="text-yellow-400 font-semibold"> Making solar energy accessible to every home in Massachusetts.</span>
             </p>
             
             {/* Back to Top Button */}

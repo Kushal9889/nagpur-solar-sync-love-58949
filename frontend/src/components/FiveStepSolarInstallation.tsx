@@ -7,7 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Zap, IndianRupee, Sun, Calculator, ChevronRight, Building, Factory, Mountain, Home, Star, CheckCircle, Phone, ArrowLeft } from "lucide-react";
+import { MapPin, Zap, DollarSign, Sun, Calculator, ChevronRight, Building, Factory, Mountain, Home, Star, CheckCircle, Phone, ArrowLeft } from "lucide-react";
 import { validatePhoneNumber, formatPhoneNumber } from '@/utils/phoneValidation';
 import { validatePincode } from '@/utils/pincodeValidation';
 import EnhancedStep4 from './solar-installation/EnhancedStep4';
@@ -40,7 +40,7 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
     pincode: '',
     phoneNumber: '',
     provider: '',
-    consumption: 5000,
+    consumption: 200,
     consumptionType: 'bill',
     serviceType
   });
@@ -71,18 +71,18 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
   const validateCurrentStep = async () => {
     switch (currentStep) {
       case 1:
-        // Validate pincode
-        if (!/^\d{6}$/.test(data.pincode)) {
+        // Validate pincode (US Zip Code - 5 digits)
+        if (!/^\d{5}$/.test(data.pincode)) {
           toast({
-            title: "Invalid Pincode",
-            description: "Please enter a valid 6-digit pincode",
+            title: "Invalid Zip Code",
+            description: "Please enter a valid 5-digit zip code",
             variant: "destructive"
           });
           return false;
         }
 
-        // Validate phone number
-        if (!validatePhoneNumber(data.phoneNumber)) {
+        // Validate phone number (US - 10 digits)
+        if (!/^\d{10}$/.test(data.phoneNumber.replace(/\D/g, ''))) {
           toast({
             title: "Invalid Phone Number",
             description: "Please enter a valid 10-digit phone number",
@@ -93,12 +93,13 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
 
         // Validate pincode with API
         setIsValidatingPincode(true);
-        const pincodeValidation = await validatePincode(data.pincode);
+        // Mock validation for US context
+        const pincodeValidation = { isValid: true, data: { city: 'Boston', state: 'MA' }, error: null };
         setIsValidatingPincode(false);
 
         if (!pincodeValidation.isValid) {
           toast({
-            title: "Invalid Pincode",
+            title: "Invalid Zip Code",
             description: pincodeValidation.error || "Service not available in this area",
             variant: "destructive"
           });
@@ -188,43 +189,43 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
 
   const getConsumptionRange = () => {
     switch (serviceType) {
-      case 'residential': return { min: 1000, max: 50000, step: 500, unit: '₹' };
-      case 'commercial': return { min: 20000, max: 500000, step: 5000, unit: '₹' };
-      case 'industrial': return { min: 50000, max: 500000, step: 10000, unit: '₹' };
+      case 'residential': return { min: 50, max: 1000, step: 10, unit: '$' };
+      case 'commercial': return { min: 500, max: 10000, step: 100, unit: '$' };
+      case 'industrial': return { min: 2000, max: 50000, step: 500, unit: '$' };
       case 'ground-mounted': return { min: 1, max: 100, step: 0.5, unit: data.consumptionType === 'mw' ? 'MW' : 'kW' };
     }
   };
 
   const calculateSavings = () => {
     const { consumption } = data;
-    const savingsRate = serviceType === 'residential' ? 0.6 : serviceType === 'commercial' ? 0.7 : 0.8;
+    const savingsRate = serviceType === 'residential' ? 0.9 : serviceType === 'commercial' ? 0.85 : 0.8;
     return Math.round(consumption * savingsRate);
   };
 
   const providers = [
     {
-      id: 'msedcl',
-      name: 'MSEDCL',
-      rate: '₹10.8/unit',
-      logo: '/uploads/msedcl-logo.png'
+      id: 'eversource',
+      name: 'Eversource',
+      rate: '$0.28/kWh',
+      logo: '/uploads/eversource-logo.png'
     },
     {
-      id: 'tata',
-      name: 'Tata Power',
-      rate: '₹11.0/unit',
-      logo: '/uploads/tata-logo.png'
+      id: 'nationalgrid',
+      name: 'National Grid',
+      rate: '$0.29/kWh',
+      logo: '/uploads/nationalgrid-logo.png'
     },
     {
-      id: 'adani',
-      name: 'Adani Electricity',
-      rate: '₹11.2/unit',
-      logo: '/uploads/adani-logo.png'
+      id: 'unitil',
+      name: 'Unitil',
+      rate: '$0.31/kWh',
+      logo: '/uploads/unitil-logo.png'
     },
     {
-      id: 'best',
-      name: 'BEST',
-      rate: '₹10.5/unit',
-      logo: '/uploads/best-logo.png'
+      id: 'municipal',
+      name: 'Municipal Light',
+      rate: '$0.18/kWh',
+      logo: '/uploads/municipal-logo.png'
     }
   ];
 
@@ -247,7 +248,7 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <Label htmlFor="pincode" className="text-base font-semibold text-gray-900">
-                Pincode <span className="text-red-500">*</span>
+                Zip Code <span className="text-red-500">*</span>
               </Label>
               <div className="relative group">
                 <Input
@@ -311,20 +312,20 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm">
               <div className="flex justify-between items-center border-b border-amber-100 pb-2">
-                <span className="font-bold text-slate-800">Nagpur Region</span>
-                <span className="font-extrabold text-[#0F2F26]">5.5 kWh/m²/day</span>
+                <span className="font-bold text-slate-800">Boston Region</span>
+                <span className="font-extrabold text-[#0F2F26]">4.5 kWh/m²/day</span>
               </div>
               <div className="flex justify-between items-center border-b border-amber-100 pb-2">
-                <span className="font-bold text-slate-800">Chandrapur Region</span>
-                <span className="font-extrabold text-[#0F2F26]">5.8 kWh/m²/day</span>
+                <span className="font-bold text-slate-800">Massachusetts</span>
+                <span className="font-extrabold text-[#0F2F26]">4.2 kWh/m²/day</span>
               </div>
               <div className="flex justify-between items-center border-b border-amber-100 pb-2">
                 <span className="font-bold text-slate-800">Sunny Days</span>
-                <span className="font-extrabold text-[#0F2F26]">300+ days/year</span>
+                <span className="font-extrabold text-[#0F2F26]">200+ days/year</span>
               </div>
               <div className="flex justify-between items-center border-b border-amber-100 pb-2">
                 <span className="font-bold text-slate-800">Peak Generation</span>
-                <span className="font-extrabold text-[#0F2F26]">March-May</span>
+                <span className="font-extrabold text-[#0F2F26]">May-August</span>
               </div>
             </div>
           </div>
@@ -458,7 +459,7 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
           <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
           <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
             <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
-              <IndianRupee className="h-8 w-8 text-[#FFC107]" />
+              <DollarSign className="h-8 w-8 text-[#FFC107]" />
             </div>
           </div>
           <CardTitle className="text-3xl font-bold tracking-tight relative z-10">Energy Consumption</CardTitle>
@@ -529,7 +530,7 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
               <div className="bg-green-50 border border-green-100 rounded-xl p-6 text-center">
                 <div className="text-sm font-medium text-green-600 uppercase tracking-wide mb-1">Estimated Monthly Savings</div>
                 <div className="text-3xl font-bold text-green-700">
-                  ₹{savings.toLocaleString()}
+                  ${savings.toLocaleString()}
                 </div>
                 <p className="text-xs text-green-600/80 mt-2">Based on average solar generation in your area</p>
               </div>

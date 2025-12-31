@@ -92,21 +92,21 @@ export const calculateSolar = (data: SolarCalculationData): SolarCalculationData
     max: Math.round(totalCost * 1.1)
   };
   
-  // Calculate subsidies
-  const subsidies = Math.min(capacity * 18000, 78000);
+  // Calculate subsidies (Federal ITC 30%)
+  const subsidies = Math.round(totalCost * 0.30);
   
   // Calculate monthly savings/revenue
   let monthlySavings = 0;
   let monthlyRevenue = 0;
   
   if (data.solarType === 'ground-mounted') {
-    // Ground-mounted generates revenue at ₹3/unit
-    monthlyRevenue = Math.round(capacity * 4 * 30 * 3);
+    // Ground-mounted generates revenue at $0.15/kWh
+    monthlyRevenue = Math.round(capacity * 4 * 30 * 0.15);
   } else {
     // Other types save on electricity bills
-    let unitPrice = 10.8;
-    if (data.solarType === 'commercial') unitPrice = 20;
-    if (data.solarType === 'industrial') unitPrice = 9;
+    let unitPrice = 0.28;
+    if (data.solarType === 'commercial') unitPrice = 0.25;
+    if (data.solarType === 'industrial') unitPrice = 0.20;
     
     monthlySavings = Math.round(capacity * 4 * 30 * unitPrice * 0.8);
   }

@@ -29,17 +29,17 @@ const PersonalizedSolarQuotesPage: React.FC = () => {
     // Calculate system cost based on KW
     let cost = 0;
     if (storedKW <= 3) {
-      cost = 200000; // ₹2L for 3kW
+      cost = 9000; // $9k for 3kW
     } else if (storedKW <= 5) {
-      cost = 300000; // ₹3L for 5kW
+      cost = 15000; // $15k for 5kW
     } else {
       // Interpolate for other sizes
-      cost = storedKW * 60000; // ₹60k per kW
+      cost = storedKW * 3000; // $3k per kW
     }
     setSystemCost(cost);
 
-    // Calculate monthly savings (KW * 120 units * ₹12/unit)
-    const savings = storedKW * 120 * 12;
+    // Calculate monthly savings (KW * 120 units * $0.28/unit)
+    const savings = storedKW * 120 * 0.28;
     setMonthlySavings(Math.round(savings));
 
     // Calculate ROI (years to recover investment)
@@ -86,7 +86,7 @@ const PersonalizedSolarQuotesPage: React.FC = () => {
               Your Personalized Solar Quote – Save Smart!
             </h1>
             <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-              Based on your {category} category and ₹{monthlyBill.toLocaleString()} monthly bill
+              Based on your {category} category and ${monthlyBill.toLocaleString()} monthly bill
             </p>
           </div>
         </AnimatedSection>
@@ -116,11 +116,11 @@ const PersonalizedSolarQuotesPage: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-4xl font-bold text-yellow-200 mb-2">
-                      ₹{monthlySavings.toLocaleString()}
+                      ${monthlySavings.toLocaleString()}
                     </div>
                     <div className="text-lg">Monthly Savings</div>
                     <div className="text-sm text-blue-100 mt-1">
-                      At ₹12/unit electricity rate
+                      At $0.28/kWh electricity rate
                     </div>
                   </div>
                   <div>

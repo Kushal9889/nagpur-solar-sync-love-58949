@@ -40,11 +40,11 @@ const AboutUsSection: React.FC = () => {
     avatar: '👨‍💻'
   }];
   const certifications = [{
-    name: 'MNRE Certified',
-    description: 'Ministry of New and Renewable Energy approved'
+    name: 'NABCEP Certified',
+    description: 'North American Board of Certified Energy Practitioners approved'
   }, {
-    name: 'MSEDCL Empanelled',
-    description: 'Maharashtra State Electricity Distribution Co. Ltd.'
+    name: 'Eversource Approved',
+    description: 'Eversource Energy Partner'
   }, {
     name: 'ISO 9001 Certified',
     description: 'Quality Management System certification'
@@ -56,7 +56,7 @@ const AboutUsSection: React.FC = () => {
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
             About <span className="text-green-600">Solar Panda</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Empowering Maharasthra  with sustainable solar solutions since 2013. We connect you with the best solar vendors and ensure quality installations.</p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Empowering Massachusetts with sustainable solar solutions since 2013. We connect you with the best solar vendors and ensure quality installations.</p>
         </div>
 
         {/* Stats Section */}
@@ -83,7 +83,7 @@ const AboutUsSection: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              <p className="text-gray-700 leading-relaxed">Making solar energy accessible to every home in Maharashtra. 
+              <p className="text-gray-700 leading-relaxed">Making solar energy accessible to every home in Massachusetts. 
 ☀️ Our Promise: Solar made simple, affordable, and regret-free — for a lifetime. </p>
             </CardContent>
           </Card>
@@ -98,7 +98,7 @@ const AboutUsSection: React.FC = () => {
             <CardContent className="p-6 text-base">
               <p className="text-gray-700 leading-relaxed">
                 To create a sustainable future where clean energy powers every home and business. 
-                We envision Nagpur as a model green city, leading India's renewable energy revolution 
+                We envision Boston as a model green city, leading the renewable energy revolution 
                 through innovative solar solutions.
               </p>
             </CardContent>
@@ -119,7 +119,7 @@ const AboutUsSection: React.FC = () => {
                 <Shield className="h-16 w-16 text-green-600 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-3">Trusted Network</h3>
                 <p className="text-gray-600">
-                  We work only with MSEDCL empanelled dealers and MNRE certified installers 
+                  We work only with Eversource approved dealers and NABCEP certified installers 
                   to ensure quality and reliability.
                 </p>
               </div>
@@ -183,7 +183,7 @@ const AboutUsSection: React.FC = () => {
               <div>
                 <Phone className="h-8 w-8 text-green-600 mx-auto mb-3" />
                 <h3 className="font-bold mb-2">Call Us</h3>
-                <p className="text-gray-600">+91 7887627220</p>
+                <p className="text-gray-600">+1 (617) 555-0123</p>
               </div>
               <div>
                 <Mail className="h-8 w-8 text-blue-600 mx-auto mb-3" />
@@ -193,7 +193,7 @@ const AboutUsSection: React.FC = () => {
               <div>
                 <MapPin className="h-8 w-8 text-red-600 mx-auto mb-3" />
                 <h3 className="font-bold mb-2">Visit Us</h3>
-                <p className="text-gray-600">123 Solar Street, Nagpur, Maharashtra</p>
+                <p className="text-gray-600">100 State Street, Boston, MA 02109</p>
               </div>
             </div>
           </CardContent>

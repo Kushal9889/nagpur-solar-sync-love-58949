@@ -20,7 +20,7 @@ const SolarCleaningAMCPage: React.FC = () => {
       id: 'cleaning',
       title: 'Solar Panel Cleaning',
       subtitle: 'Professional cleaning service',
-      price: '₹500-₹1,500',
+      price: '$50-$150',
       features: [
         'Professional cleaning equipment',
         'Water & eco-friendly solutions',
@@ -34,7 +34,7 @@ const SolarCleaningAMCPage: React.FC = () => {
       id: 'amc',
       title: 'Annual Maintenance Contract',
       subtitle: 'Complete peace of mind',
-      price: '₹2,000-₹8,000/year',
+      price: '$200-$800/year',
       features: [
         '4 scheduled cleanings per year',
         'System health monitoring',
@@ -48,7 +48,7 @@ const SolarCleaningAMCPage: React.FC = () => {
       id: 'repair',
       title: 'Repair & Maintenance',
       subtitle: 'Expert technical support',
-      price: '₹1,000-₹5,000',
+      price: '$100-$500',
       features: [
         'Inverter servicing & repair',
         'Panel troubleshooting',

@@ -39,7 +39,7 @@ const ContactUsSection: React.FC = () => {
     {
       icon: MapPin,
       title: "Visit Us",
-      details: ["Nagpur, Maharashtra", "Chandrapur, Maharashtra"],
+      details: ["Boston, MA", "Cambridge, MA"],
       color: "text-purple-500"
     },
     {
@@ -171,7 +171,7 @@ const ContactUsSection: React.FC = () => {
                   🗺️
                 </div>
                 <p className="text-green-100 text-center mt-4">
-                  Serving Nagpur, Chandrapur, and surrounding areas
+                  Serving Boston, Cambridge, and surrounding areas
                 </p>
               </CardContent>
             </Card>

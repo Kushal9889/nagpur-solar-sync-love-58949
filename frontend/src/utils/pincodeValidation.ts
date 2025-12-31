@@ -8,14 +8,14 @@ interface PincodeData {
 
 // Mock pincode data - in production, integrate with actual API
 const mockPincodeData: Record<string, PincodeData> = {
-  '440001': { pincode: '440001', city: 'Nagpur', state: 'Maharashtra', district: 'Nagpur' },
-  '440002': { pincode: '440002', city: 'Nagpur', state: 'Maharashtra', district: 'Nagpur' },
-  '440008': { pincode: '440008', city: 'Nagpur', state: 'Maharashtra', district: 'Nagpur' },
-  '440010': { pincode: '440010', city: 'Nagpur', state: 'Maharashtra', district: 'Nagpur' },
-  '442401': { pincode: '442401', city: 'Chandrapur', state: 'Maharashtra', district: 'Chandrapur' },
-  '442402': { pincode: '442402', city: 'Chandrapur', state: 'Maharashtra', district: 'Chandrapur' },
-  '441001': { pincode: '441001', city: 'Gondia', state: 'Maharashtra', district: 'Gondia' },
-  '444001': { pincode: '444001', city: 'Washim', state: 'Maharashtra', district: 'Washim' },
+  '02108': { pincode: '02108', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
+  '02109': { pincode: '02109', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
+  '02110': { pincode: '02110', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
+  '02111': { pincode: '02111', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
+  '02113': { pincode: '02113', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
+  '02114': { pincode: '02114', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
+  '02115': { pincode: '02115', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
+  '02116': { pincode: '02116', city: 'Boston', state: 'Massachusetts', district: 'Suffolk' },
 };
 
 export const validatePincode = async (pincode: string): Promise<{ isValid: boolean; data?: PincodeData; error?: string }> => {
@@ -23,8 +23,8 @@ export const validatePincode = async (pincode: string): Promise<{ isValid: boole
     // Clean pincode
     const cleanPincode = pincode.replace(/\D/g, '');
     
-    if (cleanPincode.length !== 6) {
-      return { isValid: false, error: 'Pincode must be exactly 6 digits' };
+    if (cleanPincode.length !== 5) {
+      return { isValid: false, error: 'Zip code must be exactly 5 digits' };
     }
 
     // Check in mock data first
@@ -34,21 +34,21 @@ export const validatePincode = async (pincode: string): Promise<{ isValid: boole
     }
 
     // In production, integrate with actual pincode API
-    // For now, return mock validation for Maharashtra pincodes (starting with 4)
-    if (cleanPincode.startsWith('4')) {
+    // For now, return mock validation for Massachusetts zip codes (starting with 0)
+    if (cleanPincode.startsWith('0')) {
       return {
         isValid: true,
         data: {
           pincode: cleanPincode,
-          city: 'Maharashtra City',
-          state: 'Maharashtra',
-          district: 'Maharashtra District'
+          city: 'Boston Area',
+          state: 'Massachusetts',
+          district: 'Suffolk County'
         }
       };
     }
 
     return { isValid: false, error: 'Service not available in this area' };
   } catch (error) {
-    return { isValid: false, error: 'Failed to validate pincode' };
+    return { isValid: false, error: 'Failed to validate zip code' };
   }
 };

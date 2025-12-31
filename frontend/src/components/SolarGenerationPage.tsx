@@ -242,7 +242,7 @@ const SolarGenerationPage: React.FC = () => {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white/10 rounded-lg p-4">
-                <div className="text-2xl font-bold text-yellow-400">₹18,750</div>
+                <div className="text-2xl font-bold text-yellow-400">$375</div>
                 <div className="text-green-100">Money Saved This Month</div>
               </div>
               <div className="bg-white/10 rounded-lg p-4">

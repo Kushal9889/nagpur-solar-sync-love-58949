@@ -48,7 +48,7 @@ const Navigation = ({
                   Solar Panda
                 </span>
                 <div className="text-[10px] md:text-xs text-yellow-300 font-medium hidden sm:block">
-                  98,000+ Families Saved ₹4.5L Each!
+                  98,000+ Families Saved $9,000 Each!
                 </div>
               </div>
             </div>

@@ -20,24 +20,23 @@ export interface ResidentialCalculatorData {
 }
 
 export const PANEL_COSTS = {
-  waaree: 55000,
-  adani: 57000
+  sunpower: 3000,
+  tesla: 3200
 };
 
 export const CUSTOMIZATION_COSTS = {
-  walkway: 6000,
-  elevated: 10000
+  walkway: 500,
+  elevated: 1000
 };
 
 export const DISCOM_RATES = {
-  msedcl: 10.8,
-  adani: 11.2,
-  tata: 11.0,
-  best: 10.5
+  eversource: 0.28,
+  nationalgrid: 0.29,
+  unitil: 0.30
 };
 
 export const validatePincode = (pincode: string): boolean => {
-  return /^\d{6}$/.test(pincode);
+  return /^\d{5}$/.test(pincode);
 };
 
 export const generateSavingsData = (monthlySavings: number) => {
@@ -69,7 +68,7 @@ export const calculateResidentialSolar = (data: ResidentialCalculatorData): Resi
   );
   
   // Calculate costs
-  const baseCostPerKW = PANEL_COSTS[data.panelBrand as keyof typeof PANEL_COSTS] || PANEL_COSTS.waaree;
+  const baseCostPerKW = PANEL_COSTS[data.panelBrand as keyof typeof PANEL_COSTS] || PANEL_COSTS.sunpower;
   let totalCostPerKW = baseCostPerKW;
   
   let customizationCost = 0;

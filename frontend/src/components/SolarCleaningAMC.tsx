@@ -20,7 +20,7 @@ const SolarCleaningAMC: React.FC<SolarCleaningAMCProps> = ({ onBack }) => {
       description: 'Uses sound waves to remove dust',
       icon: Zap,
       features: ['No water damage', '95% efficiency', 'Safe for all panels', 'Eco-friendly method'],
-      price: '₹500 per session',
+      price: '$50 per session',
       color: 'from-blue-500 to-blue-600',
       bestFor: 'Dry Areas'
     },
@@ -30,7 +30,7 @@ const SolarCleaningAMC: React.FC<SolarCleaningAMCProps> = ({ onBack }) => {
       description: 'Manual cleaning with soft brushes',
       icon: Brush,
       features: ['Manual cleaning', '95% efficiency', 'Safe for all panels', 'Extends panel lifespan'],
-      price: '₹800 per session',
+      price: '$80 per session',
       color: 'from-green-500 to-green-600',
       bestFor: 'Regular Maintenance'
     },
@@ -40,7 +40,7 @@ const SolarCleaningAMC: React.FC<SolarCleaningAMCProps> = ({ onBack }) => {
       description: 'High-pressure water spray',
       icon: Droplets,
       features: ['High-pressure water', '95% efficiency', 'Safe for all panels', 'Removes tough dirt effectively'],
-      price: '₹1,200 per session',
+      price: '$120 per session',
       color: 'from-cyan-500 to-cyan-600',
       bestFor: 'Heavy Dust'
     }
@@ -49,7 +49,7 @@ const SolarCleaningAMC: React.FC<SolarCleaningAMCProps> = ({ onBack }) => {
   const amcPackage = {
     title: 'Annual Maintenance Contract (AMC)',
     description: 'Complete solar system maintenance for peace of mind',
-    price: '₹5,000',
+    price: '$500',
     duration: '12 months',
     services: [
       '3 Professional Cleaning Sessions',
@@ -60,7 +60,7 @@ const SolarCleaningAMC: React.FC<SolarCleaningAMCProps> = ({ onBack }) => {
       'Priority Service Response'
     ],
     benefits: [
-      'Save ₹1,400 compared to individual services',
+      'Save $140 compared to individual services',
       'Guaranteed 95%+ panel efficiency',
       'Extended equipment lifespan',
       'Performance monitoring'
@@ -232,7 +232,7 @@ const SolarCleaningAMC: React.FC<SolarCleaningAMCProps> = ({ onBack }) => {
                 <h5 className="text-lg font-semibold text-orange-800 mb-2">Special Offer!</h5>
                 <p className="text-orange-700">
                   Book your AMC today and get <span className="font-bold">first cleaning session absolutely FREE!</span> 
-                  Save ₹1,400 compared to booking individual services.
+                  Save $140 compared to booking individual services.
                 </p>
               </div>
 
