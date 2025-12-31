@@ -7,11 +7,10 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Zap, IndianRupee, Sun, Calculator, ChevronRight, Building, Factory, Mountain, Home, Star, CheckCircle, Phone } from "lucide-react";
+import { MapPin, Zap, IndianRupee, Sun, Calculator, ChevronRight, Building, Factory, Mountain, Home, Star, CheckCircle, Phone, ArrowLeft } from "lucide-react";
 import { validatePhoneNumber, formatPhoneNumber } from '@/utils/phoneValidation';
 import { validatePincode } from '@/utils/pincodeValidation';
 import EnhancedStep4 from './solar-installation/EnhancedStep4';
-import EnhancedStep5 from './solar-installation/EnhancedStep5';
 import PaymentBookingPage from './solar-installation/PaymentBookingPage';
 
 interface InstallationData {
@@ -230,92 +229,102 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
   ];
 
   const renderStep1 = () => (
-    <Card className="w-full max-w-2xl mx-auto shadow-2xl border-2 border-[#FFC107]">
-      <CardHeader className="text-center bg-gradient-to-r from-[#1A3C34] to-[#2D5A4D] text-white">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <MapPin className="h-8 w-8 text-[#FFC107]" />
-          <CardTitle className="text-3xl font-bold">Step 1: Contact Details</CardTitle>
+    <Card className="w-full max-w-3xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl">
+      <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+        <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
+          <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
+            <MapPin className="h-8 w-8 text-[#FFC107]" />
+          </div>
         </div>
-        <CardDescription className="text-gray-200 text-lg">
-          Enter your details so we can provide personalized solar solutions
+        <CardTitle className="text-3xl font-bold tracking-tight relative z-10">Contact Details</CardTitle>
+        <CardDescription className="text-gray-300 text-lg mt-2 relative z-10">
+          We need your location to calculate solar potential
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-8 bg-gradient-to-br from-[#D4EDDA] to-white">
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="relative">
-              <Label htmlFor="pincode" className="text-lg font-semibold text-[#1A3C34] mb-3 block">
-                Pincode *
+      <CardContent className="p-6 md:p-10 bg-white">
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <Label htmlFor="pincode" className="text-base font-semibold text-gray-900">
+                Pincode <span className="text-red-500">*</span>
               </Label>
-              <Input
-                id="pincode"
-                type="text"
-                placeholder="e.g., 442401, 440001"
-                value={data.pincode}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-                  updateData({ pincode: value });
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-                className="h-14 text-lg border-2 border-[#FFC107] focus:border-[#1A3C34] bg-white"
-                maxLength={6}
-              />
-              {data.cityName && (
-                <p className="text-sm text-green-600 mt-2 font-semibold">
-                  ✓ {data.cityName} - Service Available
-                </p>
-              )}
+              <div className="relative group">
+                <Input
+                  id="pincode"
+                  type="text"
+                  placeholder="e.g. 440001"
+                  value={data.pincode}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    updateData({ pincode: value });
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleNext()}
+                  className="h-14 text-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-[#0F2F26] focus:ring-2 focus:ring-[#0F2F26]/20 transition-all rounded-xl"
+                  maxLength={6}
+                />
+                {data.cityName && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-green-700 text-sm font-medium bg-green-100 px-3 py-1 rounded-full animate-fade-in">
+                    <CheckCircle className="h-3 w-3" />
+                    {data.cityName}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="relative">
-              <Label htmlFor="phone" className="text-lg font-semibold text-[#1A3C34] mb-3 block">
-                Phone Number *
+            <div className="space-y-3">
+              <Label htmlFor="phone" className="text-base font-semibold text-gray-900">
+                Phone Number <span className="text-red-500">*</span>
               </Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0F2F26] transition-colors">
+                  <Phone className="h-5 w-5" />
+                </div>
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="9876543210"
+                  placeholder="98765 43210"
                   value={data.phoneNumber}
                   onChange={(e) => {
                     const value = formatPhoneNumber(e.target.value);
                     updateData({ phoneNumber: value });
                   }}
                   onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-                  className="h-14 text-lg border-2 border-[#FFC107] focus:border-[#1A3C34] bg-white pl-12"
+                  className="h-14 text-lg pl-12 border-gray-200 bg-gray-50 focus:bg-white focus:border-[#0F2F26] focus:ring-2 focus:ring-[#0F2F26]/20 transition-all rounded-xl"
                   maxLength={10}
                 />
               </div>
               {data.phoneNumber && validatePhoneNumber(data.phoneNumber) && (
-                <p className="text-sm text-green-600 mt-2 font-semibold">
-                  ✓ Valid phone number
+                <p className="text-sm text-green-600 mt-2 font-medium flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" /> Valid phone number
                 </p>
               )}
             </div>
           </div>
 
-          <div className="p-6 bg-gradient-to-r from-[#FFC107]/20 to-[#FF6200]/20 border-2 border-[#FFC107] rounded-lg">
-            <h4 className="font-bold text-[#1A3C34] mb-3 flex items-center gap-2">
-              <Sun className="h-5 w-5" />
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-6 shadow-sm">
+            <h4 className="font-bold text-[#0F2F26] mb-4 flex items-center gap-2 text-lg">
+              <div className="p-2 bg-amber-100 rounded-full">
+                <Sun className="h-5 w-5 text-amber-600" />
+              </div>
               Solar Potential in Your Area
             </h4>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-medium">Nagpur Region:</span>
-                <div className="text-[#1A3C34]">5.5 kWh/m²/day</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm">
+              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
+                <span className="font-bold text-slate-800">Nagpur Region</span>
+                <span className="font-extrabold text-[#0F2F26]">5.5 kWh/m²/day</span>
               </div>
-              <div>
-                <span className="font-medium">Chandrapur Region:</span>
-                <div className="text-[#1A3C34]">5.8 kWh/m²/day</div>
+              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
+                <span className="font-bold text-slate-800">Chandrapur Region</span>
+                <span className="font-extrabold text-[#0F2F26]">5.8 kWh/m²/day</span>
               </div>
-              <div>
-                <span className="font-medium">Sunny Days:</span>
-                <div className="text-[#1A3C34]">300+ days/year</div>
+              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
+                <span className="font-bold text-slate-800">Sunny Days</span>
+                <span className="font-extrabold text-[#0F2F26]">300+ days/year</span>
               </div>
-              <div>
-                <span className="font-medium">Peak Generation:</span>
-                <div className="text-[#1A3C34]">March-May</div>
+              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
+                <span className="font-bold text-slate-800">Peak Generation</span>
+                <span className="font-extrabold text-[#0F2F26]">March-May</span>
               </div>
             </div>
           </div>
@@ -323,11 +332,11 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
           <Button 
             onClick={handleNext}
             onKeyDown={(e) => handleKeyDown(e, handleNext)}
-            className="w-full h-14 text-lg font-bold bg-gradient-to-r from-[#FFC107] to-[#FF6200] hover:from-[#FF6200] hover:to-[#FFC107] text-black shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="w-full h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
             disabled={!/^\d{6}$/.test(data.pincode) || !validatePhoneNumber(data.phoneNumber) || isValidatingPincode}
           >
-            {isValidatingPincode ? 'Validating...' : 'Next: Select Provider'}
-            <ChevronRight className="ml-2 h-6 w-6" />
+            {isValidatingPincode ? 'Validating Location...' : 'Continue to Provider'}
+            <ChevronRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
       </CardContent>
@@ -335,84 +344,102 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
   );
 
   const renderStep2 = () => (
-    <Card className="w-full max-w-4xl mx-auto shadow-2xl border-2 border-[#FFC107]">
-      <CardHeader className="text-center bg-gradient-to-r from-[#1A3C34] to-[#2D5A4D] text-white">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <Zap className="h-8 w-8 text-[#FFC107]" />
-          <CardTitle className="text-3xl font-bold">Step 2: Electricity Provider</CardTitle>
+    <Card className="w-full max-w-4xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl">
+      <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+        <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
+          <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
+            <Zap className="h-8 w-8 text-[#FFC107]" />
+          </div>
         </div>
-        <CardDescription className="text-gray-200 text-lg">
+        <CardTitle className="text-3xl font-bold tracking-tight relative z-10">Electricity Provider</CardTitle>
+        <CardDescription className="text-gray-300 text-lg mt-2 relative z-10">
           Select your current electricity distribution company
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-8 bg-gradient-to-br from-[#D4EDDA] to-white">
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <CardContent className="p-6 md:p-10 bg-white">
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {providers.map((provider) => (
               <Button
                 key={provider.id}
                 onClick={() => handleProviderSelection(provider.id)}
                 onKeyDown={(e) => handleKeyDown(e, () => handleProviderSelection(provider.id))}
-                className={`h-24 p-6 border-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                className={`h-auto py-6 px-4 border-2 rounded-xl transition-all duration-300 flex flex-col items-center gap-3 hover:-translate-y-1 ${
                   data.provider === provider.id
-                    ? 'border-[#FFC107] bg-gradient-to-r from-[#FFC107] to-[#FF6200] text-black shadow-lg'
-                    : 'border-[#1A3C34] bg-white hover:border-[#FFC107] text-[#1A3C34]'
+                    ? 'border-[#FFC107] bg-[#FFC107]/10 text-[#0F2F26] shadow-md ring-1 ring-[#FFC107]'
+                    : 'border-gray-200 bg-white hover:border-[#FFC107] hover:bg-gray-50 text-slate-600'
                 }`}
-                variant="outline"
+                variant="ghost"
               >
-                <div className="flex flex-col items-center gap-2">
-                  <div className="text-lg font-bold">{provider.name}</div>
-                  <div className="text-sm font-medium text-[#FF6200]">{provider.rate}</div>
-                  {data.provider === provider.id && (
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  )}
+                <div className={`p-3 rounded-full ${data.provider === provider.id ? 'bg-[#FFC107]' : 'bg-gray-100'}`}>
+                  <Zap className={`h-6 w-6 ${data.provider === provider.id ? 'text-[#0F2F26]' : 'text-gray-400'}`} />
                 </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold">{provider.name}</div>
+                  <div className="text-sm font-medium text-amber-600 mt-1">{provider.rate}</div>
+                </div>
+                {data.provider === provider.id && (
+                  <div className="absolute top-3 right-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  </div>
+                )}
               </Button>
             ))}
           </div>
 
-          <div className="text-center">
-            <Button
-              onClick={() => setShowCustomProvider(true)}
-              onKeyDown={(e) => handleKeyDown(e, () => setShowCustomProvider(true))}
-              variant="outline"
-              className="border-2 border-[#1A3C34] text-[#1A3C34] hover:bg-[#FFC107] hover:text-black"
-            >
-              Other Provider
-            </Button>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500 font-medium">Or select other</span>
+            </div>
           </div>
 
-          {showCustomProvider && (
-            <div className="p-6 border-2 border-[#FFC107] rounded-lg bg-white">
-              <Label className="text-lg font-semibold text-[#1A3C34] mb-3 block">
-                Enter Provider Name
-              </Label>
-              <Input
-                placeholder="Enter your electricity provider"
-                value={data.customProvider || ''}
-                onChange={(e) => updateData({ customProvider: e.target.value, provider: 'custom' })}
-                onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-                className="border-2 border-[#FFC107] focus:border-[#1A3C34]"
-              />
-            </div>
-          )}
+          <div className="text-center">
+            {!showCustomProvider ? (
+              <Button
+                onClick={() => setShowCustomProvider(true)}
+                onKeyDown={(e) => handleKeyDown(e, () => setShowCustomProvider(true))}
+                variant="outline"
+                className="border-2 border-gray-200 text-gray-600 hover:border-[#0F2F26] hover:text-[#0F2F26] h-12 px-8 rounded-xl"
+              >
+                Other Provider
+              </Button>
+            ) : (
+              <div className="max-w-md mx-auto p-6 border border-amber-200 rounded-xl bg-amber-50/50 animate-fade-in">
+                <Label className="text-base font-semibold text-[#0F2F26] mb-3 block text-left">
+                  Enter Provider Name
+                </Label>
+                <Input
+                  placeholder="Enter your electricity provider"
+                  value={data.customProvider || ''}
+                  onChange={(e) => updateData({ customProvider: e.target.value, provider: 'custom' })}
+                  onKeyDown={(e) => e.key === 'Enter' && handleNext()}
+                  className="h-12 border-amber-200 focus:border-[#0F2F26] focus:ring-[#0F2F26] bg-white"
+                  autoFocus
+                />
+              </div>
+            )}
+          </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 pt-4">
             <Button 
               onClick={handlePrevious}
               onKeyDown={(e) => handleKeyDown(e, handlePrevious)}
               variant="outline" 
-              className="flex-1 h-12 border-2 border-[#1A3C34] text-[#1A3C34] hover:bg-[#1A3C34] hover:text-white"
+              className="flex-1 h-14 text-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#0F2F26] rounded-xl"
             >
-              Previous
+              Back
             </Button>
             <Button 
               onClick={handleNext}
               onKeyDown={(e) => handleKeyDown(e, handleNext)}
-              className="flex-1 h-12 bg-gradient-to-r from-[#FFC107] to-[#FF6200] hover:from-[#FF6200] hover:to-[#FFC107] text-black font-bold shadow-lg"
+              className="flex-1 h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
               disabled={!data.provider}
             >
-              Next: Energy Consumption
+              Continue
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -426,72 +453,85 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
     const savings = calculateSavings();
     
     return (
-      <Card className="w-full max-w-3xl mx-auto shadow-2xl border-2 border-[#FFC107]">
-        <CardHeader className="text-center bg-gradient-to-r from-[#1A3C34] to-[#2D5A4D] text-white">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <IndianRupee className="h-8 w-8 text-[#FFC107]" />
-            <CardTitle className="text-3xl font-bold">Step 3: Energy Consumption</CardTitle>
+      <Card className="w-full max-w-3xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl">
+        <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+          <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
+            <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
+              <IndianRupee className="h-8 w-8 text-[#FFC107]" />
+            </div>
           </div>
-          <CardDescription className="text-gray-200 text-lg">
+          <CardTitle className="text-3xl font-bold tracking-tight relative z-10">Energy Consumption</CardTitle>
+          <CardDescription className="text-gray-300 text-lg mt-2 relative z-10">
             {serviceType === 'ground-mounted' 
               ? 'Enter your required capacity in kW or MW'
               : 'Enter your monthly electricity bill amount'
             }
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-8 bg-gradient-to-br from-[#D4EDDA] to-white">
-          <div className="space-y-8">
+        <CardContent className="p-6 md:p-10 bg-white">
+          <div className="space-y-10">
             {serviceType === 'ground-mounted' && (
-              <div className="flex justify-center gap-4 mb-6">
+              <div className="flex justify-center gap-4 mb-6 p-1 bg-gray-100 rounded-xl w-fit mx-auto">
                 <Button
                   onClick={() => updateData({ consumptionType: 'kw' })}
-                  className={`px-6 py-3 ${
+                  className={`px-6 py-2 rounded-lg transition-all ${
                     data.consumptionType === 'kw'
-                      ? 'bg-[#FFC107] text-black'
-                      : 'bg-white border-2 border-[#1A3C34] text-[#1A3C34]'
+                      ? 'bg-white text-[#0F2F26] shadow-sm font-bold'
+                      : 'bg-transparent text-gray-500 hover:text-[#0F2F26]'
                   }`}
+                  variant="ghost"
                 >
                   kW (Kilowatt)
                 </Button>
                 <Button
                   onClick={() => updateData({ consumptionType: 'mw' })}
-                  className={`px-6 py-3 ${
+                  className={`px-6 py-2 rounded-lg transition-all ${
                     data.consumptionType === 'mw'
-                      ? 'bg-[#FFC107] text-black'
-                      : 'bg-white border-2 border-[#1A3C34] text-[#1A3C34]'
+                      ? 'bg-white text-[#0F2F26] shadow-sm font-bold'
+                      : 'bg-transparent text-gray-500 hover:text-[#0F2F26]'
                   }`}
+                  variant="ghost"
                 >
                   MW (Megawatt)
                 </Button>
               </div>
             )}
 
-            <div className="space-y-4">
-              <Label className="text-xl font-bold text-[#1A3C34] block">
-                {serviceType === 'ground-mounted' 
-                  ? `Capacity Required (${range.unit})`
-                  : `Monthly Bill Amount (${range.unit})`
-                }
-              </Label>
+            <div className="space-y-8">
+              <div className="text-center">
+                <Label className="text-lg font-medium text-gray-500 block mb-2">
+                  {serviceType === 'ground-mounted' 
+                    ? `Capacity Required`
+                    : `Monthly Bill Amount`
+                  }
+                </Label>
+                <div className="text-5xl font-bold text-[#0F2F26] tracking-tight">
+                  {range.unit}{data.consumption.toLocaleString()}
+                </div>
+              </div>
               
-              <div className="px-4">
+              <div className="px-4 py-6 bg-gray-50 rounded-2xl border border-gray-100">
                 <Slider
                   value={[data.consumption]}
                   onValueChange={(value) => updateData({ consumption: value[0] })}
                   min={range.min}
                   max={range.max}
                   step={range.step}
-                  className="w-full"
+                  className="w-full cursor-pointer"
                 />
+                <div className="flex justify-between mt-4 text-sm text-gray-400 font-medium">
+                  <span>{range.unit}{range.min.toLocaleString()}</span>
+                  <span>{range.unit}{range.max.toLocaleString()}</span>
+                </div>
               </div>
 
-              <div className="text-center">
-                <div className="text-3xl font-bold text-[#1A3C34] mb-2">
-                  {range.unit}{data.consumption.toLocaleString()}
+              <div className="bg-green-50 border border-green-100 rounded-xl p-6 text-center">
+                <div className="text-sm font-medium text-green-600 uppercase tracking-wide mb-1">Estimated Monthly Savings</div>
+                <div className="text-3xl font-bold text-green-700">
+                  ₹{savings.toLocaleString()}
                 </div>
-                <div className="text-lg text-[#FF6200] font-semibold">
-                  Estimated Monthly Savings: ₹{savings.toLocaleString()}
-                </div>
+                <p className="text-xs text-green-600/80 mt-2">Based on average solar generation in your area</p>
               </div>
             </div>
 
@@ -500,16 +540,16 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
                 onClick={handlePrevious}
                 onKeyDown={(e) => handleKeyDown(e, handlePrevious)}
                 variant="outline" 
-                className="flex-1 h-12 border-2 border-[#1A3C34] text-[#1A3C34] hover:bg-[#1A3C34] hover:text-white"
+                className="flex-1 h-14 text-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#0F2F26] rounded-xl"
               >
-                Previous
+                Back
               </Button>
               <Button 
                 onClick={handleNext}
                 onKeyDown={(e) => handleKeyDown(e, handleNext)}
-                className="flex-1 h-12 bg-gradient-to-r from-[#FFC107] to-[#FF6200] hover:from-[#FF6200] hover:to-[#FFC107] text-black font-bold shadow-lg"
+                className="flex-1 h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
               >
-                Next: Select Components
+                See Components
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
@@ -520,59 +560,70 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1A3C34] via-[#2D5A4D] to-[#D4EDDA] py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-[#0F2F26] py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            {getServiceIcon()}
-            <h1 className="text-4xl font-bold text-white">{getServiceTitle()}</h1>
+        <div className="text-center mb-12 relative">
+          <Button 
+            onClick={onBack} 
+            variant="ghost" 
+            className="absolute left-0 top-0 text-white/70 hover:text-white hover:bg-white/10 hidden md:flex items-center gap-2"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            Back
+          </Button>
+          
+          <div className="inline-flex items-center justify-center p-4 bg-white/5 rounded-full backdrop-blur-sm mb-6 border border-white/10">
+            <div className="text-[#FFC107]">
+              {getServiceIcon()}
+            </div>
           </div>
-          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
-            Complete solar installation process in 5 easy steps
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">{getServiceTitle()}</h1>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light">
+            Complete your solar installation journey in 5 simple steps
           </p>
         </div>
 
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button onClick={onBack} variant="outline" className="shadow-lg hover:shadow-xl transition-all duration-300 text-white border-white hover:bg-white hover:text-[#1A3C34]">
-            ← Back to Services
+        {/* Mobile Back Button */}
+        <div className="md:hidden mb-8">
+          <Button onClick={onBack} variant="outline" className="w-full text-white border-white/20 bg-white/5 hover:bg-white/10">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Services
           </Button>
         </div>
 
         {/* Progress Bar */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="flex items-center justify-between mb-4">
-            {[1, 2, 3, 4, 5].map((step) => (
-              <div
-                key={step}
-                className={`flex items-center justify-center w-12 h-12 rounded-full border-4 font-bold ${
-                  step <= currentStep
-                    ? 'bg-[#FFC107] border-[#FFC107] text-black'
-                    : 'bg-white border-gray-300 text-gray-500'
-                }`}
-              >
-                {step}
-              </div>
-            ))}
-          </div>
-          <Progress value={getProgressPercentage()} className="h-3 bg-white/20" />
-          <div className="flex justify-between mt-2 text-sm text-white font-medium">
-            <span>Contact</span>
-            <span>Provider</span>
-            <span>Consumption</span>
-            <span>Components</span>
-            <span>Booking</span>
-          </div>
-          <div className="text-center mt-2">
-            <Badge className="bg-[#FFC107] text-black font-bold px-4 py-2">
-              {Math.round(getProgressPercentage())}% Complete
-            </Badge>
+        <div className="max-w-3xl mx-auto mb-12">
+          <div className="relative">
+            <div className="absolute top-1/2 left-0 w-full h-1 bg-white/10 -translate-y-1/2 rounded-full" />
+            <div 
+              className="absolute top-1/2 left-0 h-1 bg-[#FFC107] -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${getProgressPercentage()}%` }}
+            />
+            <div className="relative flex justify-between">
+              {[1, 2, 3, 4, 5].map((step) => (
+                <div key={step} className="flex flex-col items-center gap-2">
+                  <div
+                    className={`flex items-center justify-center w-10 h-10 rounded-full border-4 font-bold text-sm transition-all duration-300 ${
+                      step <= currentStep
+                        ? 'bg-[#FFC107] border-[#FFC107] text-[#0F2F26] scale-110 shadow-lg shadow-[#FFC107]/20'
+                        : 'bg-[#0F2F26] border-white/20 text-gray-500'
+                    }`}
+                  >
+                    {step}
+                  </div>
+                  <span className={`text-xs font-medium hidden sm:block transition-colors duration-300 ${
+                    step <= currentStep ? 'text-[#FFC107]' : 'text-gray-500'
+                  }`}>
+                    {['Contact', 'Provider', 'Usage', 'System', 'Book'][step - 1]}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Step Content */}
-        <div className="max-w-6xl mx-auto">
+        <div className="transition-all duration-500 ease-in-out">
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}

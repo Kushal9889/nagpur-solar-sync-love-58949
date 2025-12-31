@@ -1,29 +1,30 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface PaymentDocument extends Document {
-  user: mongoose.Types.ObjectId;
-  subscription?: mongoose.Types.ObjectId;
+  userId?: mongoose.Types.ObjectId;
   amount: number;
   currency: string;
-  method: string;
-  stripeSessionId?: string;
-  status: "pending" | "paid" | "failed" | "refunded";
+  status: "pending" | "completed" | "failed";
+  stripeSessionId: string;
+  stripePaymentIntentId?: string;
+  description?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const paymentSchema = new Schema<PaymentDocument>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    subscription: { type: Schema.Types.ObjectId, ref: "Subscription", required: false },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: false },
     amount: { type: Number, required: true },
-    currency: { type: String, default: "INR" },
-    method: { type: String, required: true },
-    stripeSessionId: { type: String, required: false },
-    status: { type: String, enum: ["pending", "paid", "failed", "refunded"], default: "pending" }
+    currency: { type: String, default: "inr" },
+    status: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
+    stripeSessionId: { type: String, required: true },
+    stripePaymentIntentId: { type: String },
+    description: { type: String }
   },
   { timestamps: true }
 );
 
+// Prevent model overwrite error if compiled multiple times
 const Payment = mongoose.models.Payment || mongoose.model<PaymentDocument>("Payment", paymentSchema);
 export default Payment;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sun, Search, Gift, Bell, BarChart3, Users, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import EnhancedOnboardingTutorial from './EnhancedOnboardingTutorial';
+// import EnhancedOnboardingTutorial from './EnhancedOnboardingTutorial';
 interface NavigationProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
@@ -32,7 +32,7 @@ const Navigation = ({
   };
 
   return <div className="navigation-container">
-      {showVideoPopup && <EnhancedOnboardingTutorial onComplete={handleVideoComplete} onStartPlanSelection={handleVideoComplete} />}
+      {/* {showVideoPopup && <EnhancedOnboardingTutorial onComplete={handleVideoComplete} onStartPlanSelection={handleVideoComplete} />} */}
 
       <nav className="shadow-xl sticky top-0 z-50 border-b-2 border-yellow-400 bg-lime-900">
         <div className="container mx-auto px-4 bg-fuchsia-950">

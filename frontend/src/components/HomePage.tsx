@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sun, Zap, Shield, Award, TrendingUp, Users, MapPin, Phone, Home, Building, Factory, Mountain, Play } from "lucide-react";
 import SolarCalculator from './SolarCalculator';
-import EnhancedCountdownTimer from './EnhancedCountdownTimer';
 import VideoGallery from './VideoGallery';
 
 const HomePage: React.FC = () => {
@@ -189,9 +188,9 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* Countdown Timer */}
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <EnhancedCountdownTimer />
-          </div>
+          </div> */}
 
           {/* Limited Time Offer */}
           <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black p-6 rounded-2xl mb-8">

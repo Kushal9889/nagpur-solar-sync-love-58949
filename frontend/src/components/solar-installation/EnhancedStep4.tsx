@@ -201,27 +201,39 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
 
   return (
     <>
-      <Card className="w-full max-w-7xl mx-auto shadow-2xl border-2 border-[#FFC107]">
-        <CardHeader className="text-center bg-gradient-to-r from-[#1A3C34] to-[#2D5A4D] text-white">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Zap className="h-8 w-8 text-[#FFC107]" />
-            <CardTitle className="text-3xl font-bold">Step 4: Select Solar Components</CardTitle>
+      <Card className="w-full max-w-7xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl">
+        <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+          <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
+            <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
+              <Zap className="h-8 w-8 text-[#FFC107]" />
+            </div>
           </div>
-          <CardDescription className="text-gray-200 text-lg">
+          <CardTitle className="text-3xl font-bold tracking-tight relative z-10">Select Solar Components</CardTitle>
+          <CardDescription className="text-gray-300 text-lg mt-2 relative z-10">
             Choose the perfect panel technology, brand, and inverter for your installation
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="p-8 bg-gradient-to-br from-[#D4EDDA] to-white">
+        <CardContent className="p-6 md:p-10 bg-white">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 bg-[#1A3C34] text-white">
-              <TabsTrigger value="technology" className="data-[state=active]:bg-[#FFC107] data-[state=active]:text-black">
+            <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-100 p-1 rounded-xl">
+              <TabsTrigger 
+                value="technology" 
+                className="data-[state=active]:bg-white data-[state=active]:text-[#0F2F26] data-[state=active]:shadow-sm rounded-lg py-3 font-medium transition-all"
+              >
                 Panel Technology
               </TabsTrigger>
-              <TabsTrigger value="brand" className="data-[state=active]:bg-[#FFC107] data-[state=active]:text-black">
+              <TabsTrigger 
+                value="brand" 
+                className="data-[state=active]:bg-white data-[state=active]:text-[#0F2F26] data-[state=active]:shadow-sm rounded-lg py-3 font-medium transition-all"
+              >
                 Panel Brand
               </TabsTrigger>
-              <TabsTrigger value="inverter" className="data-[state=active]:bg-[#FFC107] data-[state=active]:text-black">
+              <TabsTrigger 
+                value="inverter" 
+                className="data-[state=active]:bg-white data-[state=active]:text-[#0F2F26] data-[state=active]:shadow-sm rounded-lg py-3 font-medium transition-all"
+              >
                 Inverter Selection
               </TabsTrigger>
             </TabsList>
@@ -231,54 +243,55 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
                 {technologies.map((tech) => (
                   <Card
                     key={tech.id}
-                    className={`cursor-pointer transition-all duration-300 border-4 hover:shadow-xl transform hover:scale-105 ${
+                    className={`cursor-pointer transition-all duration-300 border-2 hover:shadow-xl transform hover:-translate-y-1 ${
                       data.selectedTechnology === tech.id
-                        ? 'border-[#FFC107] bg-gradient-to-br from-[#FFC107]/20 to-[#FF6200]/20 shadow-lg'
-                        : 'border-gray-300 hover:border-[#FFC107]'
+                        ? 'border-[#FFC107] ring-2 ring-[#FFC107]/20 shadow-lg'
+                        : 'border-gray-100 hover:border-[#FFC107]/50'
                     }`}
                     onClick={() => handleTechnologySelect(tech.id)}
                     onKeyDown={(e) => handleKeyDown(e, () => handleTechnologySelect(tech.id))}
                     tabIndex={0}
                   >
                     <CardContent className="p-6">
-                      <div className="relative mb-4">
+                      <div className="relative mb-4 overflow-hidden rounded-lg">
                         <img
                           src={tech.image}
                           alt={tech.name}
-                          className={`w-full h-48 object-cover rounded-lg transition-transform duration-300 ${
+                          className={`w-full h-48 object-cover transition-transform duration-500 ${
                             hoveredImage === tech.id ? 'scale-110' : ''
                           }`}
                           onMouseEnter={() => setHoveredImage(tech.id)}
                           onMouseLeave={() => setHoveredImage(null)}
                         />
-                        <Badge className="absolute top-2 right-2 bg-[#FFC107] text-black font-bold">
+                        <Badge className="absolute top-2 right-2 bg-[#FFC107] text-[#0F2F26] font-bold border-0">
                           {tech.efficiency}
                         </Badge>
                         <Button
                           onClick={(e) => openTechModal(tech.id, e)}
                           onKeyDown={(e) => handleKeyDown(e, () => openTechModalFromKeyboard(tech.id))}
-                          className="absolute bottom-2 right-2 p-2 bg-[#1A3C34] hover:bg-[#FFC107] text-white hover:text-black"
+                          className="absolute bottom-2 right-2 p-2 bg-white/90 hover:bg-white text-[#0F2F26] shadow-sm backdrop-blur-sm"
                           size="sm"
+                          variant="ghost"
                         >
                           <Info className="h-4 w-4" />
                         </Button>
                       </div>
                       
-                      <h3 className="text-xl font-bold text-[#1A3C34] mb-2">{tech.name}</h3>
-                      <p className="text-sm text-gray-600 mb-3">Best for: {tech.bestFor}</p>
+                      <h3 className="text-xl font-bold text-[#0F2F26] mb-2">{tech.name}</h3>
+                      <p className="text-sm text-gray-500 mb-4">Best for: {tech.bestFor}</p>
                       
-                      <div className="space-y-2 mb-4">
+                      <div className="space-y-3 mb-5 bg-gray-50 p-3 rounded-lg">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Monthly Savings:</span>
-                          <span className="font-bold text-[#FF6200]">{tech.savings}</span>
+                          <span className="text-sm text-gray-600">Monthly Savings</span>
+                          <span className="font-bold text-green-600">{tech.savings}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Efficiency:</span>
-                          <span className="font-bold text-[#1A3C34]">{tech.efficiency}</span>
+                          <span className="text-sm text-gray-600">Efficiency</span>
+                          <span className="font-bold text-[#0F2F26]">{tech.efficiency}</span>
                         </div>
                       </div>
 
-                      <ul className="space-y-1 mb-4">
+                      <ul className="space-y-2 mb-5">
                         {tech.benefits.slice(0, 2).map((benefit, index) => (
                           <li key={index} className="text-xs text-gray-600 flex items-start gap-2">
                             <span className="w-1.5 h-1.5 bg-[#FFC107] rounded-full mt-1.5 flex-shrink-0"></span>
@@ -291,9 +304,9 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
                         onClick={(e) => openTechModal(tech.id, e)}
                         onKeyDown={(e) => handleKeyDown(e, () => openTechModalFromKeyboard(tech.id))}
                         variant="outline"
-                        className="w-full border-[#FFC107] text-[#1A3C34] hover:bg-[#FFC107] hover:text-black"
+                        className="w-full border-gray-200 text-gray-600 hover:bg-[#FFC107] hover:text-[#0F2F26] hover:border-[#FFC107] transition-colors"
                       >
-                        View More Details
+                        View Details
                       </Button>
                     </CardContent>
                   </Card>
@@ -308,41 +321,41 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
                   return (
                     <Card
                       key={brand.id}
-                      className={`cursor-pointer transition-all duration-300 border-4 hover:shadow-xl transform hover:scale-105 ${
+                      className={`cursor-pointer transition-all duration-300 border-2 hover:shadow-xl transform hover:-translate-y-1 ${
                         data.selectedBrand === brand.id
-                          ? 'border-[#FFC107] bg-gradient-to-br from-[#FFC107]/20 to-[#FF6200]/20 shadow-lg'
-                          : 'border-gray-300 hover:border-[#FFC107]'
+                          ? 'border-[#FFC107] ring-2 ring-[#FFC107]/20 shadow-lg'
+                          : 'border-gray-100 hover:border-[#FFC107]/50'
                       }`}
                       onClick={() => handleBrandSelect(brand.id)}
                       onKeyDown={(e) => handleKeyDown(e, () => handleBrandSelect(brand.id))}
                       tabIndex={0}
                     >
                       <CardContent className="p-6">
-                        <div className="relative mb-4">
+                        <div className="relative mb-4 overflow-hidden rounded-lg bg-gray-50">
                           <img
                             src={selectedTech?.image || '/uploads/default-panel.png'}
                             alt={`${brand.name} ${selectedTech?.name || 'Panel'}`}
-                            className={`w-full h-48 object-cover rounded-lg transition-transform duration-300 ${
+                            className={`w-full h-48 object-cover transition-transform duration-500 ${
                               hoveredImage === brand.id ? 'scale-110' : ''
                             }`}
                             onMouseEnter={() => setHoveredImage(brand.id)}
                             onMouseLeave={() => setHoveredImage(null)}
                           />
                           {brand.premium && (
-                            <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                            <Badge className="absolute top-2 right-2 bg-[#0F2F26] text-white border-0">
                               Premium
                             </Badge>
                           )}
                         </div>
                         
-                        <h3 className="text-xl font-bold text-[#1A3C34] mb-2 text-center">{brand.name}</h3>
-                        <p className="text-sm text-gray-600 text-center mb-4">
+                        <h3 className="text-xl font-bold text-[#0F2F26] mb-2 text-center">{brand.name}</h3>
+                        <p className="text-sm text-gray-500 text-center mb-4">
                           {selectedTech?.name || 'Technology'} Panel
                         </p>
                         
-                        <div className="flex items-center justify-center gap-2">
-                          {brand.premium && <Star className="h-4 w-4 text-yellow-500" />}
-                          <span className="text-sm text-[#1A3C34] font-medium">
+                        <div className="flex items-center justify-center gap-2 bg-gray-50 py-2 rounded-lg">
+                          {brand.premium && <Star className="h-4 w-4 text-[#FFC107] fill-[#FFC107]" />}
+                          <span className="text-sm text-[#0F2F26] font-medium">
                             {brand.premium ? 'Premium Quality' : 'Reliable Quality'}
                           </span>
                         </div>
@@ -358,21 +371,21 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
                 {inverters.map((inverter) => (
                   <Card
                     key={inverter.id}
-                    className={`cursor-pointer transition-all duration-300 border-4 hover:shadow-xl transform hover:scale-105 ${
+                    className={`cursor-pointer transition-all duration-300 border-2 hover:shadow-xl transform hover:-translate-y-1 ${
                       data.selectedInverter === inverter.id
-                        ? 'border-[#FFC107] bg-gradient-to-br from-[#FFC107]/20 to-[#FF6200]/20 shadow-lg'
-                        : 'border-gray-300 hover:border-[#FFC107]'
+                        ? 'border-[#FFC107] ring-2 ring-[#FFC107]/20 shadow-lg'
+                        : 'border-gray-100 hover:border-[#FFC107]/50'
                     }`}
                     onClick={() => handleInverterSelect(inverter.id)}
                     onKeyDown={(e) => handleKeyDown(e, () => handleInverterSelect(inverter.id))}
                     tabIndex={0}
                   >
                     <CardContent className="p-6">
-                      <div className="mb-4">
+                      <div className="mb-4 bg-gray-50 rounded-lg p-4">
                         <img
                           src={inverter.image}
                           alt={inverter.name}
-                          className={`w-full h-48 object-contain rounded-lg transition-transform duration-300 ${
+                          className={`w-full h-40 object-contain transition-transform duration-500 ${
                             hoveredImage === inverter.id ? 'scale-110' : ''
                           }`}
                           onMouseEnter={() => setHoveredImage(inverter.id)}
@@ -380,13 +393,13 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
                         />
                       </div>
                       
-                      <h3 className="text-xl font-bold text-[#1A3C34] mb-2 text-center">{inverter.name}</h3>
-                      <p className="text-lg font-bold text-[#FF6200] text-center mb-4">{inverter.price}</p>
+                      <h3 className="text-xl font-bold text-[#0F2F26] mb-2 text-center">{inverter.name}</h3>
+                      <p className="text-lg font-bold text-[#FFC107] text-center mb-4">{inverter.price}</p>
                       
-                      <ul className="space-y-2">
+                      <ul className="space-y-2 bg-gray-50 p-3 rounded-lg">
                         {inverter.features.map((feature, index) => (
                           <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                            <Shield className="h-3 w-3 text-[#FFC107]" />
+                            <Shield className="h-3 w-3 text-[#0F2F26]" />
                             {feature}
                           </li>
                         ))}
@@ -403,18 +416,18 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
               onClick={onPrevious}
               onKeyDown={(e) => handleKeyDown(e, onPrevious)}
               variant="outline" 
-              className="flex-1 h-12 border-2 border-[#1A3C34] text-[#1A3C34] hover:bg-[#1A3C34] hover:text-white"
+              className="flex-1 h-14 text-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#0F2F26] rounded-xl"
             >
               <ChevronLeft className="mr-2 h-5 w-5" />
-              Previous: Consumption
+              Back
             </Button>
             <Button 
               onClick={onNext}
               onKeyDown={(e) => handleKeyDown(e, onNext)}
-              className="flex-1 h-12 bg-gradient-to-r from-[#FFC107] to-[#FF6200] hover:from-[#FF6200] hover:to-[#FFC107] text-black font-bold shadow-lg"
+              className="flex-1 h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
               disabled={!canProceed}
             >
-              Next: Customization
+              Next Step
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -423,72 +436,75 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
 
       {/* Technology Detail Modal */}
       {showModal && selectedTech && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-6 md:p-8">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-[#1A3C34]">{selectedTech.name} Technology</h2>
+                <h2 className="text-2xl font-bold text-[#0F2F26]">{selectedTech.name} Technology</h2>
                 <Button
                   onClick={closeModal}
                   onKeyDown={(e) => handleKeyDown(e, closeModal)}
                   variant="ghost"
-                  className="p-2"
+                  className="p-2 hover:bg-gray-100 rounded-full"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-6 w-6 text-gray-500" />
                 </Button>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="rounded-xl overflow-hidden bg-gray-100">
                   <img
                     src={selectedTech.image}
                     alt={selectedTech.name}
-                    className="w-full h-64 object-cover rounded-lg"
+                    className="w-full h-full object-cover min-h-[200px]"
                   />
                 </div>
                 
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 bg-[#FFC107]/20 rounded-lg">
-                      <div className="text-2xl font-bold text-[#1A3C34]">{selectedTech.efficiency}</div>
-                      <div className="text-sm text-gray-600">Efficiency</div>
+                    <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                      <div className="text-2xl font-bold text-[#0F2F26]">{selectedTech.efficiency}</div>
+                      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mt-1">Efficiency</div>
                     </div>
-                    <div className="text-center p-3 bg-[#FF6200]/20 rounded-lg">
-                      <div className="text-lg font-bold text-[#FF6200]">{selectedTech.savings}</div>
-                      <div className="text-sm text-gray-600">Monthly Savings</div>
+                    <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
+                      <div className="text-lg font-bold text-green-700">{selectedTech.savings}</div>
+                      <div className="text-xs font-medium text-green-600 uppercase tracking-wide mt-1">Monthly Savings</div>
                     </div>
                   </div>
                   
-                  <div>
-                    <h4 className="font-bold text-[#1A3C34] mb-2">Best For:</h4>
-                    <p className="text-gray-600">{selectedTech.bestFor}</p>
+                  <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                    <h4 className="font-bold text-[#0F2F26] mb-1 text-sm uppercase tracking-wide">Best For</h4>
+                    <p className="text-gray-700 font-medium">{selectedTech.bestFor}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="mt-6">
-                <h4 className="font-bold text-[#1A3C34] mb-3">Key Benefits:</h4>
-                <ul className="space-y-2">
+              <div className="mb-6">
+                <h4 className="font-bold text-[#0F2F26] mb-3 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-[#FFC107] fill-[#FFC107]" />
+                  Key Benefits
+                </h4>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {selectedTech.benefits.map((benefit, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <Gauge className="h-4 w-4 text-[#FFC107] mt-1 flex-shrink-0" />
-                      <span className="text-gray-700">{benefit}</span>
+                    <li key={index} className="flex items-start gap-3 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                      <span className="w-1.5 h-1.5 bg-[#FFC107] rounded-full mt-1.5 flex-shrink-0"></span>
+                      {benefit}
                     </li>
                   ))}
                 </ul>
               </div>
               
-              <div className="mt-6">
-                <h4 className="font-bold text-[#1A3C34] mb-3">Detailed Information:</h4>
-                <p className="text-gray-700 leading-relaxed">{selectedTech.detailedInfo}</p>
+              <div className="mb-8">
+                <h4 className="font-bold text-[#0F2F26] mb-3">Detailed Information</h4>
+                <p className="text-gray-600 leading-relaxed text-sm">{selectedTech.detailedInfo}</p>
               </div>
               
-              <div className="mt-6 flex gap-4">
+              <div className="flex gap-4 pt-4 border-t border-gray-100">
                 <Button
                   onClick={closeModal}
                   onKeyDown={(e) => handleKeyDown(e, closeModal)}
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 h-12 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#0F2F26]"
                 >
                   Close
                 </Button>
@@ -501,7 +517,7 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
                     handleTechnologySelect(selectedTech.id);
                     closeModal();
                   })}
-                  className="flex-1 bg-[#FFC107] hover:bg-[#FF6200] text-black"
+                  className="flex-1 h-12 bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] font-bold shadow-md"
                 >
                   Select This Technology
                 </Button>
