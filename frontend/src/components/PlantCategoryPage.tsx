@@ -138,17 +138,17 @@ const PlantCategoryPage: React.FC = () => {
                     </div>
                   )}
                   
-                  <div className="w-full h-32 mx-auto mb-4 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <div className="text-gray-500 text-center">
-                      <span className="text-sm">No Image</span><br/>
-                      <span className="text-xs">Upload</span>
+                    <div className="w-full h-32 mx-auto mb-4 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="text-white text-center">
+                        <span className="text-sm">No Image</span><br/>
+                        <span className="text-xs">Upload</span>
+                      </div>
                     </div>
-                  </div>
                   
                   <CardTitle className={`text-xl font-bold ${selectedCategory === category.id ? 'text-[#FF6200]' : 'text-white'}`}>
                     {category.name}
                   </CardTitle>
-                  <CardDescription className="text-gray-200">
+                  <CardDescription className="text-white">
                     {category.description}
                   </CardDescription>
                 </CardHeader>
@@ -158,7 +158,7 @@ const PlantCategoryPage: React.FC = () => {
                     {category.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${selectedCategory === category.id ? 'bg-[#FF6200]' : 'bg-[#1A3C34]'}`}></div>
-                        <span className="text-sm text-gray-700">{feature}</span>
+                        <span className="text-sm text-white">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -189,10 +189,10 @@ const PlantCategoryPage: React.FC = () => {
                 </div>
                 
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-[#1A3C34] mb-2">
+                  <div className="text-4xl font-bold text-white mb-2">
                     ${billAmount.toLocaleString()}
                   </div>
-                  <div className="text-lg text-[#FF6200] font-semibold">
+                  <div className="text-lg text-white font-semibold">
                     Estimated Monthly Savings: ${Math.round(billAmount * 0.9).toLocaleString()}
                   </div>
                 </div>
@@ -201,7 +201,7 @@ const PlantCategoryPage: React.FC = () => {
               {/* Contact Form */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <div>
-                  <Label htmlFor="pincode" className="text-lg font-semibold text-[#1A3C34] mb-2 block">
+                  <Label htmlFor="pincode" className="text-lg font-semibold text-white mb-2 block">
                     Pincode *
                   </Label>
                   <Input
@@ -216,7 +216,7 @@ const PlantCategoryPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="phone" className="text-lg font-semibold text-[#1A3C34] mb-2 block">
+                  <Label htmlFor="phone" className="text-lg font-semibold text-white mb-2 block">
                     Phone Number *
                   </Label>
                   <Input
