@@ -4,7 +4,7 @@ import mongoose, { Document, Schema } from "mongoose";
 // TIER 1: THE MARKETING TRAP (High Velocity)
 // ==========================================
 // Purpose: Captures Zip + Phone immediately. 
-// strictly separated from the User profile to avoid pollution.
+// Strictly separated from the User profile to avoid pollution.
 
 export interface MarketingLeadDocument extends Document {
   phone: string;
@@ -33,10 +33,9 @@ const MarketingLeadSchema = new Schema<MarketingLeadDocument>(
 );
 
 // ==========================================
-// TIER 2: THE GHOST PIPELINE (Composite Logic)
+// TIER 2: THE GHOST PIPELINE (Lean & Real Logic)
 // ==========================================
-// ELITE STRATEGY: We separate the "Power System" cost from the "Structure" cost.
-// This allows dynamic pricing without hardcoding rigid plans.
+// Purpose: Holds the "Draft" order. If they don't pay in 24h, this AUTO-DELETES.
 
 export interface OrderSessionDocument extends Document {
   sessionId: string;
@@ -44,22 +43,29 @@ export interface OrderSessionDocument extends Document {
   
   // THE COMPOSITE SELECTION STATE
   selection: {
-    // FACTOR 1: The Power Plan (from Image 2)
+    // FACTOR 1: The Power Plan (Step 2)
     systemType: 'basic_4kw' | 'standard_8kw' | 'premium_12kw' | null;
     basePrice: number; 
 
-    // FACTOR 2: The Structure (from Image 3)
+    // FACTOR 2: The Structure (Step 3)
     structureType: 'standard_roof' | 'elevated' | 'high_rise' | null;
-    structureSurcharge: number; // The extra cost for the structure
+    structureSurcharge: number; 
 
-    // FACTOR 3: User Segment
+    // FACTOR 3: Hardware Configuration (Step 4 - The 3 Key Factors)
+    hardware: {
+        panelTechnology: string; // e.g., 'mono-bifacial'
+        panelBrand: string;      // e.g., 'panasonic'
+        inverterBrand: string;   // e.g., 'enphase'
+    };
+
+    // FACTOR 4: User Segment
     customerType: 'residential' | 'commercial';
   };
 
   // AUTOMATICALLY CALCULATED QUOTE
   finalQuote: {
-    totalSystemCost: number; // Base + Structure
-    gstAmount: number;       // e.g., 18% or relevant tax
+    totalSystemCost: number; // Base + Structure + Hardware Surcharges
+    gstAmount: number;       // e.g., 5% Tax
     finalTotal: number;      // Grand total
     monthlyEMI: number;      // Estimated monthly payment
     currency: string;
@@ -71,7 +77,7 @@ export interface OrderSessionDocument extends Document {
     uploadedAt: Date;
   }[];
   
-  // Add documents map for easier access
+  // Helper map for easier frontend access
   documents?: { [key: string]: string };
 
   stepCompleted: number;
@@ -98,6 +104,13 @@ const OrderSessionSchema = new Schema<OrderSessionDocument>(
       },
       structureSurcharge: { type: Number, default: 0 },
       
+      // ⚡️ LEAN HARDWARE SCHEMA (Only the 3 Real Factors)
+      hardware: {
+        panelTechnology: { type: String }, // e.g., 'mono-bifacial'
+        panelBrand: { type: String },      // e.g., 'panasonic'
+        inverterBrand: { type: String }    // e.g., 'enphase'
+      },
+      
       customerType: { 
         type: String, 
         enum: ['residential', 'commercial'], 
@@ -122,9 +135,12 @@ const OrderSessionSchema = new Schema<OrderSessionDocument>(
     documents: { type: Map, of: String },
 
     stepCompleted: { type: Number, default: 0 },
-    expiresAt: { type: Date, default: Date.now, index: { expires: '24h' } }
+    expiresAt: { type: Date, default: Date.now, index: { expires: '24h' } } // AUTO-DELETE
   },
-  { timestamps: true, collection: 'order_sessions' }
+  { 
+    timestamps: true,
+    collection: 'order_sessions'
+  }
 );
 
 // ==========================================
