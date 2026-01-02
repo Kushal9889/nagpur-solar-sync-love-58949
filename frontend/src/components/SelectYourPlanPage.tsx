@@ -4,17 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowLeft, ArrowRight } from "lucide-react";
+import { useFunnel } from "../hooks/useFunnel";
 
 const SelectYourPlanPage: React.FC = () => {
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const { selectPlan, loading } = useFunnel();
 
   const plans = [
     {
-      id: 'basic',
+      id: 'basic_4kw', // Updated to match backend enum
       name: 'Basic',
-      capacity: '2–3 kW',
-      forHomes: 'Small homes (200–300 units)',
+      capacity: '3-4 kW',
+      forHomes: 'Small homes (300-400 units)',
       details: 'Lights, fans, TV, fridge',
       idealFor: '1BHK/2BHK, 2–3 people',
       price: '$3,000-$6,000',
@@ -28,10 +30,10 @@ const SelectYourPlanPage: React.FC = () => {
       color: 'from-blue-500 to-blue-600'
     },
     {
-      id: 'standard',
+      id: 'standard_8kw', // Updated to match backend enum
       name: 'Standard',
-      capacity: '3–5 kW',
-      forHomes: 'Medium homes (300–500 units)',
+      capacity: '5-8 kW',
+      forHomes: 'Medium homes (500-800 units)',
       details: 'Above + 2 AC, washing machine',
       idealFor: '2–3BHK, 3–5 people',
       price: '$9,000-$15,000',
@@ -46,10 +48,10 @@ const SelectYourPlanPage: React.FC = () => {
       popular: true
     },
     {
-      id: 'premium',
+      id: 'premium_12kw', // Updated to match backend enum
       name: 'Premium',
-      capacity: '6–10 kW',
-      forHomes: 'Large homes (600–1000 units)',
+      capacity: '10-12 kW',
+      forHomes: 'Large homes (1000-1200 units)',
       details: 'Above + multiple ACs, pumps',
       idealFor: 'Villas, large families',
       price: '$18,000-$30,000',
@@ -68,8 +70,17 @@ const SelectYourPlanPage: React.FC = () => {
     setSelectedPlan(planId);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedPlan) {
+      // Cache the selected plan
+      const planDetails = plans.find(p => p.id === selectedPlan);
+      if (planDetails) {
+        localStorage.setItem('selectedSolarPlan', JSON.stringify(planDetails));
+      }
+      
+      // Send data to Backend
+      await selectPlan(selectedPlan);
+      
       navigate('/select-plan-category');
     }
   };

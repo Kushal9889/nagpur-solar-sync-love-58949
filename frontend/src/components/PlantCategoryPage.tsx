@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Sun, MapPin, Phone, Calculator, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFunnel } from "../hooks/useFunnel";
 
 const PlantCategoryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,10 +17,11 @@ const PlantCategoryPage: React.FC = () => {
   const [pincode, setPincode] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const { toast } = useToast();
+  const { selectStructure, loading } = useFunnel();
 
   const categories = [
     {
-      id: 'basic',
+      id: 'standard_roof', // Updated to match backend enum
       name: 'Basic',
       description: 'Best for open land, easy installation and maintenance.',
       features: [
@@ -30,7 +32,7 @@ const PlantCategoryPage: React.FC = () => {
       image: '/uploads/ground-mounted.png'
     },
     {
-      id: 'standard',
+      id: 'elevated', // Updated to match backend enum
       name: 'Standard',
       description: '6.5 -8.5 feet high, maximize and utilise rooftop space and for better home cooling.',
       features: [
@@ -41,7 +43,7 @@ const PlantCategoryPage: React.FC = () => {
       image: '/uploads/elevated-structure.png'
     },
     {
-      id: 'premium',
+      id: 'high_rise', // Updated to match backend enum
       name: 'Premium',
       description: 'Premium: Elevated with Giant structure 8.5 × 10.5 tall and walkway for easy cleaning and access.',
       features: [
@@ -57,7 +59,7 @@ const PlantCategoryPage: React.FC = () => {
     setSelectedCategory(categoryId);
   };
 
-  const handleShowQuote = () => {
+  const handleShowQuote = async () => {
     if (!selectedCategory) {
       toast({
         title: "Please select a plan category",
@@ -75,6 +77,21 @@ const PlantCategoryPage: React.FC = () => {
       });
       return;
     }
+
+    // Cache the selected category and user details
+    const categoryDetails = categories.find(c => c.id === selectedCategory);
+    if (categoryDetails) {
+      localStorage.setItem('selectedSolarCategory', JSON.stringify(categoryDetails));
+    }
+    
+    localStorage.setItem('userContactDetails', JSON.stringify({
+      pincode,
+      phone,
+      billAmount
+    }));
+
+    // Send to Backend (Backend recalculates price instantly)
+    await selectStructure(selectedCategory);
 
     // Here you would send the data to your backend
     console.log('Quote Request:', {
@@ -139,16 +156,16 @@ const PlantCategoryPage: React.FC = () => {
                   )}
                   
                     <div className="w-full h-32 mx-auto mb-4 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <div className="text-white text-center">
+                      <div className="text-gray-500 text-center">
                         <span className="text-sm">No Image</span><br/>
                         <span className="text-xs">Upload</span>
                       </div>
                     </div>
                   
-                  <CardTitle className={`text-xl font-bold ${selectedCategory === category.id ? 'text-[#FF6200]' : 'text-white'}`}>
+                  <CardTitle className={`text-xl font-bold ${selectedCategory === category.id ? 'text-[#FF6200]' : 'text-[#1A3C34]'}`}>
                     {category.name}
                   </CardTitle>
-                  <CardDescription className="text-white">
+                  <CardDescription className="text-gray-600">
                     {category.description}
                   </CardDescription>
                 </CardHeader>
@@ -158,7 +175,7 @@ const PlantCategoryPage: React.FC = () => {
                     {category.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${selectedCategory === category.id ? 'bg-[#FF6200]' : 'bg-[#1A3C34]'}`}></div>
-                        <span className="text-sm text-white">{feature}</span>
+                        <span className="text-sm text-gray-700">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -189,10 +206,10 @@ const PlantCategoryPage: React.FC = () => {
                 </div>
                 
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-white mb-2">
+                  <div className="text-4xl font-bold text-[#1A3C34] mb-2">
                     ${billAmount.toLocaleString()}
                   </div>
-                  <div className="text-lg text-white font-semibold">
+                  <div className="text-lg text-[#1A3C34] font-semibold">
                     Estimated Monthly Savings: ${Math.round(billAmount * 0.9).toLocaleString()}
                   </div>
                 </div>
@@ -201,7 +218,7 @@ const PlantCategoryPage: React.FC = () => {
               {/* Contact Form */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <div>
-                  <Label htmlFor="pincode" className="text-lg font-semibold text-white mb-2 block">
+                  <Label htmlFor="pincode" className="text-lg font-semibold text-[#1A3C34] mb-2 block">
                     Pincode *
                   </Label>
                   <Input
@@ -216,7 +233,7 @@ const PlantCategoryPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="phone" className="text-lg font-semibold text-white mb-2 block">
+                  <Label htmlFor="phone" className="text-lg font-semibold text-[#1A3C34] mb-2 block">
                     Phone Number *
                   </Label>
                   <Input

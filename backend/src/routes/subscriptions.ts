@@ -5,11 +5,13 @@ import Payment from "../models/payment";
 
 const router = express.Router();
 
-// ELITE-K: Initialize Stripe with the Secret Key
+// ELITE-K: Initialize Stripe lazily to ensure env is loaded
 // Ensure STRIPE_SECRET_KEY is in your .env file
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: '2024-12-18.acacia', // Updated to latest stable version or match your installed version
-});
+const getStripe = () => {
+  return new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+    // apiVersion will use library default
+  });
+};
 
 /**
  * POST /subscriptions/create-checkout
@@ -35,6 +37,7 @@ router.post("/create-checkout", async (req, res) => {
     }
 
     // 2. Create the Stripe Session
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [

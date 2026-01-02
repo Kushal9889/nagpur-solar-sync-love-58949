@@ -14,6 +14,11 @@ export interface UserDocument extends Document {
   referralCode: string;
   credits: number;
   documents?: mongoose.Types.ObjectId[];
+  planDetails?: {
+    capacity?: string;
+    category?: string;
+    plantType?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,7 +42,12 @@ const userSchema = new Schema<UserDocument>(
     address: { type: addressSchema, required: false },
     referralCode: { type: String, required: true, unique: true },
     credits: { type: Number, default: 0 },
-    documents: [{ type: Schema.Types.ObjectId, ref: "Document" }]
+    documents: [{ type: Schema.Types.ObjectId, ref: "Document" }],
+    planDetails: {
+      capacity: { type: String },
+      category: { type: String },
+      plantType: { type: String }
+    }
   },
   { timestamps: true }
 );

@@ -20,6 +20,7 @@ import EnhancedProfileSection from "@/components/EnhancedProfileSection";
 import BlogSection from "@/components/BlogSection";
 import SolarCleaningAMCPage from "@/components/SolarCleaningAMCPage";
 import NotFound from "./pages/NotFound";
+import OrderSuccessPage from "./components/OrderSuccessPage";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="profile" element={<EnhancedProfileSection />} />
             <Route path="blog" element={<BlogSection />} />
             <Route path="solar-cleaning" element={<SolarCleaningAMCPage />} />
+            <Route path="order-success" element={<OrderSuccessPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

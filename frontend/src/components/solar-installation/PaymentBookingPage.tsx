@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { useFunnel } from "../../hooks/useFunnel";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { DocumentUpload } from "../DocumentUpload";
 import { 
   CreditCard, 
   Upload, 
@@ -25,6 +28,53 @@ import {
   Check
 } from "lucide-react";
 
+// Put your Public Key here (from Stripe Dashboard)
+const stripePromise = loadStripe("pk_test_YOUR_PUBLISHABLE_KEY_HERE");
+
+// INNER COMPONENT: The actual form
+const CheckoutForm = ({ totalAmount }: { totalAmount: number }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) return; // Not loaded yet
+
+    setIsProcessing(true);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        // Redirect back to your success page after payment
+        return_url: `${window.location.origin}/order-success`, 
+      },
+    });
+
+    if (error) {
+      setErrorMessage(error.message || "Payment Failed");
+      setIsProcessing(false);
+    }
+    // If success, Stripe redirects automatically.
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement />
+      {errorMessage && <div className="text-red-500 text-sm">{errorMessage}</div>}
+      <Button 
+        type="submit" 
+        className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 text-lg font-bold"
+        disabled={!stripe || isProcessing}
+      >
+        {isProcessing ? "Processing..." : `Pay $${totalAmount.toLocaleString()}`}
+      </Button>
+    </form>
+  );
+};
+
 interface PaymentBookingPageProps {
   data: any;
   onBack: () => void;
@@ -36,12 +86,74 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
   const [bookingProgress, setBookingProgress] = useState(90);
   const [showEMIGuide, setShowEMIGuide] = useState(false);
   const [liveBookings, setLiveBookings] = useState(12);
+  const [cachedPlan, setCachedPlan] = useState<any>(null);
+  const [cachedCategory, setCachedCategory] = useState<any>(null);
   const { toast } = useToast();
+  const { state, saveDocument } = useFunnel();
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+  // 1. Get the Client Secret when user is ready to pay
+  const handleInitiatePayment = async () => {
+    if (!state?.sessionId) {
+      toast({
+        title: "Session Error",
+        description: "No active session found. Please restart the process.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!selectedPayment) {
+      toast({
+        title: "Payment Method Required",
+        description: "Please select a payment method to proceed",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Only proceed with Stripe for Card payments for now, or generic
+    // For this demo, we'll assume "card" or any selection triggers Stripe
+    
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/funnel/create-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: state.sessionId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setClientSecret(data.clientSecret);
+        setBookingProgress(100); // Move progress to 100% as we enter payment
+      } else {
+        toast({
+          title: "Payment Error",
+          description: data.error || "Could not initiate payment",
+          variant: "destructive"
+        });
+      }
+    } catch (err) {
+      console.error("Payment Start Error", err);
+      toast({
+        title: "Network Error",
+        description: "Failed to connect to payment server",
+        variant: "destructive"
+      });
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
       setLiveBookings(Math.floor(Math.random() * 20) + 8);
     }, 5000);
+
+    // Retrieve cached selections
+    const savedPlan = localStorage.getItem('selectedSolarPlan');
+    const savedCategory = localStorage.getItem('selectedSolarCategory');
+    
+    if (savedPlan) setCachedPlan(JSON.parse(savedPlan));
+    if (savedCategory) setCachedCategory(JSON.parse(savedCategory));
+
     return () => clearInterval(interval);
   }, []);
 
@@ -212,6 +324,93 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             
+            {/* Order Summary Card - NEW SECTION */}
+            {(cachedPlan || cachedCategory) && (
+              <Card className="border-blue-100 shadow-sm">
+                <CardHeader className="bg-blue-50/50 pb-4">
+                  <CardTitle className="flex items-center gap-2 text-blue-800">
+                    <CheckCircle className="h-5 w-5" />
+                    Your Solar Configuration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {cachedPlan && (
+                      <div className="space-y-2">
+                        <h3 className="font-semibold text-gray-700">Selected Plan</h3>
+                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-bold text-lg text-blue-700">{cachedPlan.name}</span>
+                            <Badge variant="secondary">{cachedPlan.capacity}</Badge>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">{cachedPlan.details}</p>
+                          <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
+                            <TrendingUp className="h-3 w-3" />
+                            {cachedPlan.savings}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {cachedCategory && (
+                      <div className="space-y-2">
+                        <h3 className="font-semibold text-gray-700">Installation Type</h3>
+                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-bold text-lg text-green-700">{cachedCategory.name}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">{cachedCategory.description}</p>
+                          <ul className="text-xs text-gray-500 space-y-1">
+                            {cachedCategory.features?.slice(0, 2).map((f: string, i: number) => (
+                              <li key={i} className="flex items-center gap-1">
+                                <Check className="h-3 w-3 text-green-500" /> {f}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Backend Calculated Pricing */}
+                  {state && state.finalQuote && (
+                    <div className="mt-6 pt-4 border-t border-gray-100 space-y-3">
+                      <div className="flex justify-between text-sm text-gray-600">
+                        <span>System Base Price</span>
+                        <span>${state.selection.basePrice.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-orange-600">
+                        <span>Structure Surcharge</span>
+                        <span>+ ${state.selection.structureSurcharge.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-gray-500">
+                        <span>GST / Tax</span>
+                        <span>${state.finalQuote.gstAmount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-200">
+                        <div className="text-sm font-medium text-gray-700">Total To Pay</div>
+                        <div className="text-xl font-bold text-emerald-700">
+                          ${state.finalQuote.finalTotal.toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="bg-blue-50 p-2 rounded text-center text-xs text-blue-800">
+                        Estimated EMI: <span className="font-bold">${state.finalQuote.monthlyEMI}/mo</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {!state && (
+                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
+                      <div className="text-sm text-gray-500">Estimated Total System Cost</div>
+                      <div className="text-xl font-bold text-gray-900">
+                        {cachedPlan?.price || "Calculated at checkout"}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Investment Summary */}
             <Card className="border-0 shadow-sm overflow-hidden">
               <CardHeader className="bg-slate-50 border-b border-gray-100 pb-4">
@@ -297,44 +496,42 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                     </div>
                     <div>
                       <CardTitle className="text-lg font-bold text-[#0F2F26]">Required Documents</CardTitle>
-                      <CardDescription>Upload for instant approval ({completedDocs}/{totalDocs})</CardDescription>
+                      <CardDescription>Upload for instant approval</CardDescription>
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {requiredDocuments.map((doc) => (
-                    <div 
-                      key={doc.id}
-                      onClick={() => handleDocumentUpload(doc.id)}
-                      className={`
-                        relative group cursor-pointer rounded-xl border-2 border-dashed p-4 transition-all
-                        ${uploadedDocs[doc.id] 
-                          ? 'border-green-500 bg-green-900/20' 
-                          : 'border-gray-600 bg-[#0F2F26] hover:border-[#FFC107] hover:bg-[#1A3C34]'
-                        }
-                      `}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`
-                          p-2 rounded-lg text-xl
-                          ${uploadedDocs[doc.id] ? 'bg-green-100' : 'bg-white/10 shadow-sm'}
-                        `}>
-                          {doc.icon}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h5 className="font-bold text-white">{doc.name}</h5>
-                            {uploadedDocs[doc.id] && <CheckCircle className="h-5 w-5 text-green-500" />}
-                          </div>
-                          <p className="text-xs font-bold text-gray-300 mt-1">
-                            {uploadedDocs[doc.id] ? 'Uploaded successfully' : (doc.required ? 'Required document' : 'Optional')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  {/* REAL FUNCTIONAL UPLOADS */}
+                  <DocumentUpload 
+                    label="Driver's License / State ID" 
+                    onUploadComplete={(key) => {
+                      setUploadedDocs(prev => ({...prev, 'state-id': true}));
+                      saveDocument('state-id', key);
+                    }}
+                  />
+                  <DocumentUpload 
+                    label="Utility Bill (Latest)" 
+                    onUploadComplete={(key) => {
+                      setUploadedDocs(prev => ({...prev, 'utility-bill': true}));
+                      saveDocument('utility-bill', key);
+                    }}
+                  />
+                  <DocumentUpload 
+                    label="Property Tax Receipt" 
+                    onUploadComplete={(key) => {
+                      setUploadedDocs(prev => ({...prev, 'property-tax': true}));
+                      saveDocument('property-tax', key);
+                    }}
+                  />
+                  <DocumentUpload 
+                    label="Rooftop Photos" 
+                    onUploadComplete={(key) => {
+                      setUploadedDocs(prev => ({...prev, 'rooftop-photos': true}));
+                      saveDocument('rooftop-photos', key);
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -417,6 +614,29 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Plan Summary */}
+            {cachedPlan && (
+              <Card className="border-0 shadow-sm bg-white">
+                <CardHeader className="pb-2 border-b border-gray-100">
+                  <CardTitle className="text-base font-bold text-[#0F2F26]">Selected Plan</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-600">System Size</span>
+                    <span className="text-sm font-bold text-[#0F2F26]">{cachedPlan.capacity}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-600">Plan Type</span>
+                    <span className="text-sm font-bold text-[#0F2F26]">{cachedPlan.name}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <span className="text-base font-bold text-[#0F2F26]">Total Cost</span>
+                    <span className="text-base font-bold text-[#FFC107]">{cachedPlan.price}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Trust Card */}
             <Card className="border-0 shadow-sm bg-[#0F2F26]">
               <CardHeader className="pb-2">
@@ -473,18 +693,35 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
               </CardContent>
             </Card>
 
-            {/* Action Button */}
+            {/* Action Button / Stripe Payment */}
             <div className="sticky top-24">
-              <Button 
-                onClick={handleConfirmBooking}
-                disabled={!selectedPayment}
-                className="w-full h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl transition-all"
-              >
-                Confirm Booking
-              </Button>
-              <p className="text-xs text-center text-white/60 mt-3">
-                By confirming, you agree to our terms of service
-              </p>
+              {!clientSecret ? (
+                <>
+                  <Button 
+                    onClick={handleInitiatePayment}
+                    disabled={!selectedPayment}
+                    className="w-full h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Proceed to Secure Payment
+                  </Button>
+                  <p className="text-xs text-center text-white/60 mt-3">
+                    By confirming, you agree to our terms of service
+                  </p>
+                </>
+              ) : (
+                <Card className="border-0 shadow-lg bg-white">
+                  <CardHeader className="pb-2 bg-emerald-50 rounded-t-xl">
+                    <CardTitle className="text-base font-bold text-emerald-800 flex items-center gap-2">
+                      <Shield className="h-4 w-4" /> Secure Checkout
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <CheckoutForm totalAmount={state?.finalQuote?.finalTotal || 0} />
+                    </Elements>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>

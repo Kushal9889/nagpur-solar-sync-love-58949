@@ -34,25 +34,63 @@ import {
 const EnhancedProfileSection = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [progress, setProgress] = useState(0);
-  const [uploadedDocs, setUploadedDocs] = useState({
-    aadhar: false,
-    pan: false,
-    electricityBill: false,
-    houseTax: false,
-    bankPassbook: false
-  });
+  const [uploadedDocs, setUploadedDocs] = useState<{[key: string]: boolean}>({});
   const [showMissingDocsAlert, setShowMissingDocsAlert] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  // Fetch User Profile on Mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        // In a real app, you'd get the userId from auth context
+        // For demo, we'll try to find a user created from the last session
+        const sessionId = localStorage.getItem('solar_session_id');
+        if (!sessionId) return;
+
+        // Mock fetching user data based on session/auth
+        // const res = await fetch(`/api/users/profile?sessionId=${sessionId}`);
+        // const data = await res.json();
+        
+        // For now, we'll simulate the data structure we expect from the backend
+        // based on what we just implemented in verifyPaymentAndMigrate
+        const mockBackendData = {
+          name: 'Guest User', // or from Auth
+          planDetails: {
+            capacity: '8kW', // This would come from DB
+            category: 'Standard',
+            plantType: 'Residential'
+          },
+          documents: ['state-id', 'utility-bill'] // This would be the list of uploaded doc types
+        };
+        
+        setUserProfile(mockBackendData);
+
+        // Update uploaded docs state based on backend data
+        if (mockBackendData.documents) {
+          const newDocsState: any = {};
+          mockBackendData.documents.forEach((doc: string) => {
+            newDocsState[doc] = true;
+          });
+          setUploadedDocs(prev => ({ ...prev, ...newDocsState }));
+        }
+
+      } catch (err) {
+        console.error("Failed to fetch profile", err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   // Mock user data - enhanced with more details
   const userData = {
-    name: 'Rajesh Kumar',
+    name: userProfile?.name || 'Rajesh Kumar',
     phone: '+1-555-123-4567',
     email: 'rajesh.kumar@email.com',
     address: 'Beacon Hill, Boston, MA',
     pincode: '02108',
     joinDate: '15 Jan 2024',
     totalSavings: '$4,500',
-    systemSize: '5kW',
+    systemSize: userProfile?.planDetails?.capacity || '5kW',
     installationDate: '25 Feb 2024',
     monthlyBill: '$150',
     roofSize: '1500 sq ft',
@@ -109,11 +147,11 @@ const EnhancedProfileSection = () => {
   ];
 
   const documents = [
-    { id: 'aadhar', name: 'Aadhaar Card', required: true, icon: FileText },
-    { id: 'pan', name: 'PAN Card', required: true, icon: CreditCard },
-    { id: 'electricityBill', name: 'Electricity Bill', required: true, icon: Zap },
-    { id: 'houseTax', name: 'House Tax Receipt', required: false, icon: Home },
-    { id: 'bankPassbook', name: 'Bank Passbook', required: true, icon: BookOpen }
+    { id: 'state-id', name: 'State ID / Driver\'s License', required: true, icon: FileText },
+    { id: 'utility-bill', name: 'Utility Bill', required: true, icon: Zap },
+    { id: 'property-tax', name: 'Property Tax Receipt', required: false, icon: Home },
+    { id: 'rooftop-photos', name: 'Rooftop Photos', required: true, icon: Upload },
+    { id: 'ssn', name: 'SSN (Last 4 Digits)', required: true, icon: Shield }
   ];
 
   // Calculate progress based on uploaded documents
@@ -229,6 +267,12 @@ const EnhancedProfileSection = () => {
                 <Sun className="h-5 w-5" />
                 <span>{userData.systemSize} Solar System</span>
               </div>
+              {userProfile?.planDetails && (
+                <div className="flex items-center gap-3 bg-white/10 p-3 rounded-lg">
+                  <Award className="h-5 w-5" />
+                  <span>{userProfile.planDetails.category} Plan</span>
+                </div>
+              )}
             </div>
             
             {/* Additional User Stats */}
