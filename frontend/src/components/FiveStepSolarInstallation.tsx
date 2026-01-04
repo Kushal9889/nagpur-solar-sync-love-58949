@@ -12,6 +12,7 @@ import { validatePhoneNumber, formatPhoneNumber } from '@/utils/phoneValidation'
 import { validatePincode } from '@/utils/pincodeValidation';
 import EnhancedStep4 from './solar-installation/EnhancedStep4';
 import PaymentBookingPage from './solar-installation/PaymentBookingPage';
+import { useFunnel } from "@/hooks/useFunnel";
 
 interface InstallationData {
   pincode: string;
@@ -36,6 +37,20 @@ interface FiveStepSolarInstallationProps {
 
 const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ serviceType, onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const { state } = useFunnel(); // Get backend state
+
+  // [NEW] HYDRATION EFFECT
+  // If backend says we are on Step 4, Jump to Step 4 automatically.
+  useEffect(() => {
+    if (state && state.stepCompleted > 0) {
+      // If we haven't manually moved yet, sync with backend
+      // But only jump forward, never force backward if they are exploring
+      if (currentStep < state.stepCompleted + 1) {
+         setCurrentStep(state.stepCompleted + 1);
+      }
+    }
+  }, [state]); 
+
   const [data, setData] = useState<InstallationData>({
     pincode: '',
     phoneNumber: '',

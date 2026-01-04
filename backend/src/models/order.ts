@@ -10,15 +10,25 @@ export interface OrderDocument extends Document {
     systemType: string;
     kwSize: number;
     structureType: string;
+    // [NEW] Hardware is mandatory for installation
+    hardware: {
+      panelTechnology: string;
+      panelBrand: string;
+      inverterBrand: string;
+    }
   };
   
+  // [UPGRADED] Detailed Financial Breakdown
   financials: {
-    totalAmount: number;
+    basePrice: number;        // The plan cost
+    structureSurcharge: number; // The elevated/high-rise cost
+    gstAmount: number;        // Tax
+    totalAmount: number;      // Grand Total
     amountPaid: number;
     currency: string;
   };
 
-  status: 'processing' | 'site_visit_scheduled' | 'completed';
+  status: 'processing' | 'site_visit_scheduled' | 'installation_pending' | 'completed';
   createdAt: Date;
 }
 
@@ -31,13 +41,23 @@ const OrderSchema = new Schema<OrderDocument>(
     systemDetails: {
       systemType: String,
       kwSize: Number,
-      structureType: String
+      structureType: String,
+      // [NEW] Saving the choices
+      hardware: {
+        panelTechnology: String,
+        panelBrand: String,
+        inverterBrand: String
+      }
     },
     
+    // [UPGRADED] Storing the breakdown
     financials: {
-      totalAmount: Number,
-      amountPaid: Number,
-      currency: String
+      basePrice: { type: Number, required: true },
+      structureSurcharge: { type: Number, default: 0 },
+      gstAmount: { type: Number, required: true },
+      totalAmount: { type: Number, required: true },
+      amountPaid: { type: Number, required: true },
+      currency: { type: String, default: 'USD' }
     },
 
     status: { type: String, default: 'processing' }
@@ -45,4 +65,4 @@ const OrderSchema = new Schema<OrderDocument>(
   { timestamps: true }
 );
 
-export const Order = mongoose.model<OrderDocument>("Order", OrderSchema);
+export const Order = mongoose.models.Order || mongoose.model<OrderDocument>("Order", OrderSchema);

@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight, ChevronLeft, X, Info, Star, Zap, Gauge, Shield } from "lucide-react";
+import { useFunnel } from "../../hooks/useFunnel";
 
 interface EnhancedStep4Props {
   data: any;
@@ -25,6 +25,19 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
   const [showModal, setShowModal] = useState(false);
   const [selectedTechForModal, setSelectedTechForModal] = useState<string | null>(null);
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+  const { selectHardware, loading } = useFunnel();
+
+  const handleProceed = async () => {
+    if (data.selectedTechnology && data.selectedBrand && data.selectedInverter) {
+        // SYNC TO BACKEND BEFORE MOVING
+        await selectHardware(
+            data.selectedTechnology, 
+            data.selectedBrand, 
+            data.selectedInverter
+        );
+        onNext(); // Move to payment
+    }
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent, action: () => void) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -422,12 +435,12 @@ const EnhancedStep4: React.FC<EnhancedStep4Props> = ({
               Back
             </Button>
             <Button 
-              onClick={onNext}
-              onKeyDown={(e) => handleKeyDown(e, onNext)}
+              onClick={handleProceed}
+              onKeyDown={(e) => handleKeyDown(e, handleProceed)}
               className="flex-1 h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
-              disabled={!canProceed}
+              disabled={!canProceed || loading}
             >
-              Next Step
+              {loading ? "Saving..." : "Next Step"}
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </div>

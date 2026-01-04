@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useFunnel } from "@/hooks/useFunnel"; // We can use this to get the user ID if stored
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,48 +38,48 @@ const EnhancedProfileSection = () => {
   const [uploadedDocs, setUploadedDocs] = useState<{[key: string]: boolean}>({});
   const [showMissingDocsAlert, setShowMissingDocsAlert] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [bookingHistory, setBookingHistory] = useState<any[]>([]);
 
   // Fetch User Profile on Mount
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchRealData = async () => {
       try {
-        // In a real app, you'd get the userId from auth context
-        // For demo, we'll try to find a user created from the last session
-        const sessionId = localStorage.getItem('solar_session_id');
-        if (!sessionId) return;
-
-        // Mock fetching user data based on session/auth
-        // const res = await fetch(`/api/users/profile?sessionId=${sessionId}`);
-        // const data = await res.json();
+        // 1. Get User ID from Migration Response (Stored in localStorage ideally)
+        // For now, let's assume we stored it as 'solar_user_id' after success
+        const userId = localStorage.getItem('solar_user_id'); 
         
-        // For now, we'll simulate the data structure we expect from the backend
-        // based on what we just implemented in verifyPaymentAndMigrate
-        const mockBackendData = {
-          name: 'Guest User', // or from Auth
-          planDetails: {
-            capacity: '8kW', // This would come from DB
-            category: 'Standard',
-            plantType: 'Residential'
-          },
-          documents: ['state-id', 'utility-bill'] // This would be the list of uploaded doc types
-        };
-        
-        setUserProfile(mockBackendData);
-
-        // Update uploaded docs state based on backend data
-        if (mockBackendData.documents) {
-          const newDocsState: any = {};
-          mockBackendData.documents.forEach((doc: string) => {
-            newDocsState[doc] = true;
-          });
-          setUploadedDocs(prev => ({ ...prev, ...newDocsState }));
+        if (!userId) {
+             console.log("No user logged in");
+             return; 
         }
 
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+        // 2. Fetch User Profile & Docs
+        const userRes = await fetch(`${API_URL}/api/users/${userId}`);
+        const userData = await userRes.json();
+        setUserProfile(userData);
+
+        // Update uploaded docs UI
+        if (userData.documents) {
+            const newDocsState: any = {};
+            userData.documents.forEach((doc: any) => {
+                newDocsState[doc.type] = true; // Assumes doc has 'type' field
+            });
+            setUploadedDocs(prev => ({ ...prev, ...newDocsState }));
+        }
+
+        // 3. Fetch Orders
+        const orderRes = await fetch(`${API_URL}/api/users/${userId}/orders`);
+        const orderData = await orderRes.json();
+        setBookingHistory(orderData);
+
       } catch (err) {
-        console.error("Failed to fetch profile", err);
+        console.error("Profile Load Error", err);
       }
     };
-    fetchProfile();
+
+    fetchRealData();
   }, []);
 
   // Mock user data - enhanced with more details
@@ -124,27 +125,6 @@ const EnhancedProfileSection = () => {
     systemPerformance: '98.5% uptime',
     performance: '20 kWh/day'
   };
-
-  const bookingHistory = [
-    { 
-      id: 'BK001', 
-      company: 'SunPower Solutions',
-      service: 'Residential • 5 kW', 
-      date: '03/15/2024', 
-      status: 'Completed', 
-      amount: '$27,500',
-      action: 'View 3D Report'
-    },
-    { 
-      id: 'BK002', 
-      company: 'Tesla Energy',
-      service: 'Commercial • 25 kW', 
-      date: '20/03/2024', 
-      status: 'In Progress', 
-      amount: '$125,000',
-      action: ''
-    }
-  ];
 
   const documents = [
     { id: 'state-id', name: 'State ID / Driver\'s License', required: true, icon: FileText },
@@ -626,36 +606,69 @@ const EnhancedProfileSection = () => {
             <Card className="bg-white shadow-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  📅 Recent Bookings
+                  📅 Order History & Invoices
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {bookingHistory.map((booking) => (
-                    <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          {booking.company.includes('SunPower') ? '🏠' : '🏢'}
+                  {bookingHistory.length > 0 ? (
+                    bookingHistory.map((order: any) => (
+                      <div key={order.orderId || order.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors gap-4">
+                        
+                        {/* Column 1: System Info */}
+                        <div className="flex items-center gap-3 flex-1">
+                          <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-xl">
+                            🏠
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-800 capitalize">
+                                {order.systemDetails?.systemType?.replace('_', ' ') || 'Solar System'}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                {order.systemDetails?.hardware?.panelBrand} Panels + {order.systemDetails?.hardware?.inverterBrand} Inverter
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Order ID: <span className="font-mono">{order.orderId}</span>
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{booking.company}</p>
-                          <p className="text-sm text-gray-600">{booking.service}</p>
-                          <p className="text-sm text-gray-500">ID: {booking.id} • {booking.date}</p>
+
+                        {/* Column 2: The PRICE COLUMN (Requested) */}
+                        <div className="flex flex-col items-end min-w-[150px]">
+                           <div className="text-lg font-bold text-emerald-700">
+                              ${order.financials?.totalAmount?.toLocaleString() || order.amount}
+                           </div>
+                           <div className="text-xs text-gray-500 text-right">
+                              Base: ${order.financials?.basePrice?.toLocaleString() || '0'}
+                              {order.financials?.structureSurcharge > 0 && (
+                                  <span className="block text-orange-600">
+                                    + Structure: ${order.financials?.structureSurcharge?.toLocaleString()}
+                                  </span>
+                              )}
+                              <span className="block text-gray-400">
+                                Tax: ${order.financials?.gstAmount?.toLocaleString()}
+                              </span>
+                           </div>
                         </div>
+
+                        {/* Column 3: Status */}
+                        <div className="text-right">
+                          <Badge className={`${
+                              order.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                              order.status === 'site_visit_scheduled' ? 'bg-blue-100 text-blue-800' : 
+                              'bg-gray-100 text-gray-800'
+                          }`}>
+                            {(order.status || 'Processing').replace(/_/g, ' ').toUpperCase()}
+                          </Badge>
+                        </div>
+
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">{booking.amount}</p>
-                        <Badge variant={booking.status === 'Completed' ? 'default' : 'secondary'}>
-                          {booking.status}
-                        </Badge>
-                        {booking.action && (
-                          <Button size="sm" variant="outline" className="mt-1">
-                            {booking.action}
-                          </Button>
-                        )}
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No orders found. Book your first solar system today!
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>

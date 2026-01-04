@@ -10,6 +10,11 @@ export type FunnelState = {
     basePrice: number;
     structureType: 'standard_roof' | 'elevated' | 'high_rise' | null;
     structureSurcharge: number;
+    hardware?: {
+      panelTechnology?: string;
+      panelBrand?: string;
+      inverterBrand?: string;
+    };
   };
   finalQuote: {
     totalSystemCost: number;
@@ -17,6 +22,7 @@ export type FunnelState = {
     finalTotal: number;
     monthlyEMI: number;
   };
+  stepCompleted: number;
 };
 
 export const useFunnel = () => {
@@ -49,7 +55,7 @@ export const useFunnel = () => {
   }, []);
 
   // 2. The Universal Update Function
-  const updateFunnel = async (type: 'PLAN_UPDATE' | 'STRUCTURE_UPDATE' | 'DOC_UPLOAD', payload: any) => {
+  const updateFunnel = async (type: 'PLAN_UPDATE' | 'STRUCTURE_UPDATE' | 'HARDWARE_UPDATE' | 'DOC_UPLOAD' | 'PAYMENT_METHOD_UPDATE', payload: any) => {
     setLoading(true);
     const sid = localStorage.getItem('solar_session_id');
     
@@ -82,6 +88,13 @@ export const useFunnel = () => {
     loading,
     selectPlan: (planType: string) => updateFunnel('PLAN_UPDATE', { planType }),
     selectStructure: (structureType: string) => updateFunnel('STRUCTURE_UPDATE', { structureType }),
+    selectHardware: (tech: string, brand: string, inverter: string) => 
+        updateFunnel('HARDWARE_UPDATE', { 
+            selectedTechnology: tech, 
+            selectedBrand: brand, 
+            selectedInverter: inverter 
+        }),
     saveDocument: (docId: string, fileKey: string) => updateFunnel('DOC_UPLOAD', { docId, fileKey }),
+    selectPaymentMethod: (method: string) => updateFunnel('PAYMENT_METHOD_UPDATE', { paymentMethod: method }),
   };
 };

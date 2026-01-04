@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 // Put your Public Key here (from Stripe Dashboard)
-const stripePromise = loadStripe("pk_test_YOUR_PUBLISHABLE_KEY_HERE");
+const stripePromise = loadStripe("pk_test_51Sk90F6f7qiXSMmaArxA3XIy9kYSIKmnWA4xRkCcZRFyN3e8jmp5MRF09gsvdiesrZstKFsqbxs0E1K3N52Dxz8300JQjGn6C1");
 
 // INNER COMPONENT: The actual form
 const CheckoutForm = ({ totalAmount }: { totalAmount: number }) => {
@@ -38,26 +38,36 @@ const CheckoutForm = ({ totalAmount }: { totalAmount: number }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    if (!stripe || !elements) return; // Not loaded yet
+    if (!stripe || !elements) {
+      return; // Stripe.js hasn't loaded yet.
+    }
 
     setIsProcessing(true);
+    setErrorMessage(null);
 
+    // 1. THE TRIGGER
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Redirect back to your success page after payment
-        return_url: `${window.location.origin}/order-success`, 
+        // [CRITICAL] This is the missing navigation link
+        // It tells Stripe where to go after processing
+        return_url: `${window.location.origin}/order-success`,
       },
     });
 
+    // 2. ERROR HANDLING
+    // If we get here, it means the payment failed immediately or required more actions.
+    // (If it succeeded, Stripe would have already redirected the page)
     if (error) {
-      setErrorMessage(error.message || "Payment Failed");
+      setErrorMessage(error.message || "An unexpected error occurred.");
+      setIsProcessing(false);
+    } else {
+      // This block is rarely reached because of the redirect above
       setIsProcessing(false);
     }
-    // If success, Stripe redirects automatically.
   };
 
   return (
@@ -89,7 +99,7 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
   const [cachedPlan, setCachedPlan] = useState<any>(null);
   const [cachedCategory, setCachedCategory] = useState<any>(null);
   const { toast } = useToast();
-  const { state, saveDocument } = useFunnel();
+  const { state, saveDocument, selectPaymentMethod } = useFunnel();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   // 1. Get the Client Secret when user is ready to pay
@@ -335,23 +345,59 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                 </CardHeader>
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {cachedPlan && (
+                    
+                    {/* 1. PLAN DETAILS (From Session State or Cache) */}
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-gray-700">Selected Plan</h3>
+                      <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-bold text-lg text-blue-700">
+                             {state?.selection?.systemType ? state.selection.systemType.replace('_', ' ').toUpperCase() : (cachedPlan?.name || 'Standard System')}
+                          </span>
+                          <Badge variant="secondary">{cachedPlan?.capacity || 'Capacity TBD'}</Badge>
+                        </div>
+                        <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
+                          <TrendingUp className="h-3 w-3" />
+                          {cachedPlan?.savings || 'High Efficiency'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. [NEW] HARDWARE SELECTION (The Missing Piece) */}
+                    {state?.selection?.hardware && (
                       <div className="space-y-2">
-                        <h3 className="font-semibold text-gray-700">Selected Plan</h3>
-                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-bold text-lg text-blue-700">{cachedPlan.name}</span>
-                            <Badge variant="secondary">{cachedPlan.capacity}</Badge>
+                        <h3 className="font-semibold text-gray-700">Hardware Configuration</h3>
+                        <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm space-y-2">
+                          
+                          {/* Panel Tech */}
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">Technology:</span>
+                            <span className="font-bold text-[#0F2F26] capitalize">
+                              {state.selection.hardware.panelTechnology?.replace('-', ' ') || 'Standard'}
+                            </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">{cachedPlan.details}</p>
-                          <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
-                            <TrendingUp className="h-3 w-3" />
-                            {cachedPlan.savings}
+
+                          {/* Panel Brand */}
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">Panel Brand:</span>
+                            <span className="font-bold text-[#0F2F26] capitalize">
+                              {state.selection.hardware.panelBrand || 'Tier-1 Brand'}
+                            </span>
                           </div>
+
+                          {/* Inverter */}
+                          <div className="flex justify-between text-sm border-t border-dashed pt-2 mt-2">
+                            <span className="text-gray-500">Inverter:</span>
+                            <span className="font-bold text-[#FFC107] capitalize">
+                              {state.selection.hardware.inverterBrand || 'Smart Inverter'}
+                            </span>
+                          </div>
+
                         </div>
                       </div>
                     )}
-                    
+
+                    {/* 3. STRUCTURE DETAILS (Keep existing logic) */}
                     {cachedCategory && (
                       <div className="space-y-2">
                         <h3 className="font-semibold text-gray-700">Installation Type</h3>
@@ -372,38 +418,27 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                     )}
                   </div>
                   
-                  {/* Backend Calculated Pricing */}
+                  {/* 4. FINANCIAL BREAKDOWN (The Backend Calculator) */}
                   {state && state.finalQuote && (
                     <div className="mt-6 pt-4 border-t border-gray-100 space-y-3">
                       <div className="flex justify-between text-sm text-gray-600">
                         <span>System Base Price</span>
-                        <span>${state.selection.basePrice.toLocaleString()}</span>
+                        <span>${state.selection.basePrice?.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm text-orange-600">
                         <span>Structure Surcharge</span>
-                        <span>+ ${state.selection.structureSurcharge.toLocaleString()}</span>
+                        <span>+ ${state.selection.structureSurcharge?.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm text-gray-500">
-                        <span>GST / Tax</span>
-                        <span>${state.finalQuote.gstAmount.toLocaleString()}</span>
+                        <span>GST / Tax (5%)</span>
+                        <span>${state.finalQuote.gstAmount?.toLocaleString()}</span>
                       </div>
+                      
                       <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-200">
                         <div className="text-sm font-medium text-gray-700">Total To Pay</div>
                         <div className="text-xl font-bold text-emerald-700">
-                          ${state.finalQuote.finalTotal.toLocaleString()}
+                          ${state.finalQuote.finalTotal?.toLocaleString()}
                         </div>
-                      </div>
-                      <div className="bg-blue-50 p-2 rounded text-center text-xs text-blue-800">
-                        Estimated EMI: <span className="font-bold">${state.finalQuote.monthlyEMI}/mo</span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {!state && (
-                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
-                      <div className="text-sm text-gray-500">Estimated Total System Cost</div>
-                      <div className="text-xl font-bold text-gray-900">
-                        {cachedPlan?.price || "Calculated at checkout"}
                       </div>
                     </div>
                   )}
@@ -508,28 +543,40 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                     label="Driver's License / State ID" 
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'state-id': true}));
-                      saveDocument('state-id', key);
+                      // Cache locally
+                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
+                      current['state-id'] = key;
+                      localStorage.setItem('cached_docs', JSON.stringify(current));
                     }}
                   />
                   <DocumentUpload 
                     label="Utility Bill (Latest)" 
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'utility-bill': true}));
-                      saveDocument('utility-bill', key);
+                      // Cache locally
+                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
+                      current['utility-bill'] = key;
+                      localStorage.setItem('cached_docs', JSON.stringify(current));
                     }}
                   />
                   <DocumentUpload 
                     label="Property Tax Receipt" 
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'property-tax': true}));
-                      saveDocument('property-tax', key);
+                      // Cache locally
+                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
+                      current['property-tax'] = key;
+                      localStorage.setItem('cached_docs', JSON.stringify(current));
                     }}
                   />
                   <DocumentUpload 
                     label="Rooftop Photos" 
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'rooftop-photos': true}));
-                      saveDocument('rooftop-photos', key);
+                      // Cache locally
+                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
+                      current['rooftop-photos'] = key;
+                      localStorage.setItem('cached_docs', JSON.stringify(current));
                     }}
                   />
                 </div>
@@ -554,7 +601,10 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                   {paymentOptions.map((option) => (
                     <div
                       key={option.id}
-                      onClick={() => setSelectedPayment(option.id)}
+                      onClick={() => {
+                        setSelectedPayment(option.id);
+                        selectPaymentMethod(option.id);
+                      }}
                       className={`
                         relative cursor-pointer rounded-xl border-2 p-4 transition-all
                         ${selectedPayment === option.id

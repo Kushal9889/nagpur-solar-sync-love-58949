@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/user";
+import { Order } from "../models/order";
 const router = express.Router();
 
 /**
@@ -44,6 +45,22 @@ router.get("/:id", async (req, res) => {
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/**
+ * GET /users/:id/orders
+ * Fetch all orders for a specific user
+ */
+router.get("/:id/orders", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    // Find orders where userId matches
+    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (err) {
+    console.error("Fetch Orders Error:", err);
+    res.status(500).json({ error: "Failed to fetch orders" });
   }
 });
 

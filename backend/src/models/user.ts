@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface UserDocument extends Document {
+  authId?: string; // [NEW] Needed for the Unique Index
   name?: string;
   email: string;
   phone?: string;
@@ -35,6 +36,7 @@ const addressSchema = new Schema(
 
 const userSchema = new Schema<UserDocument>(
   {
+    authId: { type: String, unique: true, sparse: true }, // [NEW] Handle the index
     name: { type: String, required: false },
     email: { type: String, required: true, unique: true, index: true },
     phone: { type: String, required: false },

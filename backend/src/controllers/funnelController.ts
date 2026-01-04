@@ -7,6 +7,7 @@ import Stripe from 'stripe';
 import path from 'path';
 import fs from 'fs';
 import { getUploadUrl } from "../services/storage";
+import { Order } from "../models/order";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {});
 
@@ -52,12 +53,11 @@ export const captureLead = async (req: Request, res: Response) => {
 };
 
 // ==========================================
-// 2. SYNC & CALCULATE (The Lean Pricing Engine)
+// 2. SYNC & CALCULATE (The Boston Pricing Engine)
 // ==========================================
 export const syncSessionState = async (req: Request, res: Response) => {
   try {
     const { sessionId, updateType, data } = req.body;
-
     if (!sessionId) return res.status(400).json({ error: "Session ID Required" });
 
     let session = await OrderSession.findOne({ sessionId });
@@ -65,47 +65,39 @@ export const syncSessionState = async (req: Request, res: Response) => {
       session = await OrderSession.create({ sessionId, selection: {} });
     }
 
-    // --- STEP 2: PLAN SELECTION ---
+    // 1. POWER PLAN RATES (Boston Market: ~$3.50-$3.80/Watt)
     if (updateType === 'PLAN_UPDATE') {
-      const { planType } = data;
+      const { planType } = data; 
       session.selection.systemType = planType;
       
       switch (planType) {
-        case 'basic_4kw': session.selection.basePrice = 12000; break;
-        case 'standard_8kw': session.selection.basePrice = 18000; break;
-        case 'premium_12kw': session.selection.basePrice = 26000; break;
+        case 'basic_4kw': session.selection.basePrice = 15200; break;    // $3.80/watt
+        case 'standard_8kw': session.selection.basePrice = 28500; break; // $3.56/watt
+        case 'premium_12kw': session.selection.basePrice = 39900; break; // $3.32/watt
         default: session.selection.basePrice = 0;
       }
-      
       session.stepCompleted = Math.max(session.stepCompleted, 2);
     }
 
-    // --- STEP 3: STRUCTURE SELECTION ---
+    // 2. STRUCTURE SURCHARGES (Logistics & Material)
     if (updateType === 'STRUCTURE_UPDATE') {
-      const { structureType } = data;
+      const { structureType } = data; 
       session.selection.structureType = structureType;
 
       switch (structureType) {
         case 'standard_roof': session.selection.structureSurcharge = 0; break;
-        case 'elevated': session.selection.structureSurcharge = 2500; break;
-        case 'high_rise': session.selection.structureSurcharge = 5000; break;
+        case 'elevated': session.selection.structureSurcharge = 4200; break;   // Steel & reinforcement
+        case 'high_rise': session.selection.structureSurcharge = 8500; break;  // Crane & safety
         default: session.selection.structureSurcharge = 0;
       }
-
       session.stepCompleted = Math.max(session.stepCompleted, 3);
     }
 
-    // --- STEP 4: HARDWARE CONFIGURATION (The 3 Real Factors) ---
+    // 3. HARDWARE SELECTION (Step 4 - The Logic we added earlier)
     if (updateType === 'HARDWARE_UPDATE') {
        const { selectedTechnology, selectedBrand, selectedInverter } = data;
        
-       // Initialize if missing
-       if (!session.selection.hardware) session.selection.hardware = {
-           panelTechnology: '',
-           panelBrand: '',
-           inverterBrand: ''
-       };
-
+       if (!session.selection.hardware) session.selection.hardware = {};
        if (selectedTechnology) session.selection.hardware.panelTechnology = selectedTechnology;
        if (selectedBrand) session.selection.hardware.panelBrand = selectedBrand;
        if (selectedInverter) session.selection.hardware.inverterBrand = selectedInverter;
@@ -113,23 +105,22 @@ export const syncSessionState = async (req: Request, res: Response) => {
        session.stepCompleted = Math.max(session.stepCompleted, 4);
     }
 
-    // --- STEP 5: DOCUMENTS (Just tracking) ---
+    // 3.5 DOC UPLOAD
     if (updateType === 'DOC_UPLOAD') {
-        // Doc tracking handled in upload route usually, 
-        // but we can advance step here if needed
-        session.stepCompleted = Math.max(session.stepCompleted, 5);
+      const { docId, fileKey } = data; 
+      if (!session.documents) session.documents = {};
+      session.documents[docId] = fileKey;
     }
 
-    // --- PRICE CALCULATION (Runs on EVERY update) ---
-    const sel = session.selection;
+    // 4. FINAL CALCULATION
+    const base = session.selection.basePrice || 0;
+    const surcharge = session.selection.structureSurcharge || 0;
+    const totalSystemCost = base + surcharge;
     
-    // STRICT MATH: Base + Structure + Inverter Surcharge
-    // (Panels are included in Base Price, only Inverter adds extra here)
-    const totalSystemCost = 
-        (sel.basePrice || 0) + 
-        (sel.structureSurcharge || 0); 
-        
-    const gstAmount = totalSystemCost * 0.05; // 5% Tax
+    // MA Tax / GST equivalent (Using 5% placeholder or 6.25% MA Sales Tax if applicable)
+    const taxRate = 0.0625; 
+    const gstAmount = Math.round(totalSystemCost * taxRate);
+    
     const finalTotal = totalSystemCost + gstAmount;
     const monthlyEMI = finalTotal > 0 ? Math.round(finalTotal / 60) : 0;
 
@@ -143,10 +134,7 @@ export const syncSessionState = async (req: Request, res: Response) => {
 
     await session.save();
 
-    return res.status(200).json({ 
-      success: true, 
-      session 
-    });
+    return res.status(200).json({ success: true, session });
 
   } catch (error) {
     console.error("Pricing Engine Error:", error);
@@ -256,9 +244,120 @@ export const createPaymentIntent = async (req: Request, res: Response) => {
 };
 
 // ==========================================
-// 6. VERIFY & MIGRATE (Manual fallback)
+// 5. VERIFY & MIGRATE (Saving The Breakdown)
 // ==========================================
 export const verifyPaymentAndMigrate = async (req: Request, res: Response) => {
-    // Note: Most logic should be in the Webhook, this is a fallback
-    return res.status(200).json({ success: true, message: "Use Webhook for migration" });
+  try {
+    const { sessionId, paymentIntentId } = req.body;
+
+    const session = await OrderSession.findOne({ sessionId });
+    if (!session) return res.status(404).json({ error: "Session not found" });
+
+    if (session.status === 'converted') {
+        return res.status(200).json({ message: "Order already processed" });
+    }
+
+    // --- USER CREATION LOGIC (Keep existing from previous steps) ---
+    let user;
+    if (session.linkedLeadId) {
+      const lead = await MarketingLead.findById(session.linkedLeadId);
+      if (lead) {
+        user = await User.findOne({ phone: lead.phone });
+        if (!user) {
+          user = await User.create({
+            authId: `guest_${lead._id}`,
+            phone: lead.phone,
+            email: `guest_${lead.phone}@example.com`,
+            referralCode: `REF-${lead.phone.slice(-4)}-${Date.now().toString().slice(-4)}`,
+            role: 'customer'
+          });
+        }
+      }
+    }
+    if (!user) {
+       user = await User.create({
+         authId: `guest_${sessionId}`,
+         email: `session_${sessionId.slice(0,8)}@example.com`,
+         referralCode: `REF-${sessionId.slice(0,6)}-${Date.now().toString().slice(-4)}`,
+         role: 'customer'
+       });
+    }
+    // -------------------------------------------------------------
+
+    // MIGRATE DOCUMENTS (Append Mode)
+    const newDocIds: any[] = [];
+    if (session.documents) {
+      const entries: [string, string][] = session.documents instanceof Map 
+          ? Array.from(session.documents.entries()) as [string, string][]
+          : Object.entries(session.documents || {}) as [string, string][];
+
+      for (const [docType, fileKey] of entries) {
+        const newDoc = await DocumentModel.create({
+          owner: user._id,
+          type: docType,
+          url: fileKey,
+          status: 'pending'
+        });
+        newDocIds.push(newDoc._id);
+      }
+    }
+    user.documents = [...(user.documents || []), ...newDocIds];
+
+    user.planDetails = {
+      capacity: session.selection.systemType || 'Custom',
+      category: session.selection.systemType?.split('_')[0] || 'Standard',
+      plantType: session.selection.customerType
+    };
+    await user.save();
+
+    // [CRITICAL] CREATE ORDER WITH FULL FINANCIAL BREAKDOWN
+    const newOrder = await Order.create({
+        orderId: `ORD-${Date.now()}`,
+        userId: user._id,
+        stripePaymentId: paymentIntentId || 'manual_check', 
+        
+        systemDetails: {
+            systemType: session.selection.systemType,
+            kwSize: session.selection.systemType === 'basic_4kw' ? 4 : 
+                    session.selection.systemType === 'standard_8kw' ? 8 : 12,
+            structureType: session.selection.structureType,
+            hardware: {
+                panelTechnology: session.selection.hardware?.panelTechnology || 'Standard',
+                panelBrand: session.selection.hardware?.panelBrand || 'TBD',
+                inverterBrand: session.selection.hardware?.inverterBrand || 'TBD'
+            }
+        },
+        
+        // [NEW] STORE THE MATH
+        financials: {
+            basePrice: session.selection.basePrice || 0,
+            structureSurcharge: session.selection.structureSurcharge || 0,
+            gstAmount: session.finalQuote.gstAmount || 0,
+            totalAmount: session.finalQuote.finalTotal,
+            amountPaid: session.finalQuote.finalTotal,
+            currency: 'USD'
+        },
+        
+        status: 'site_visit_scheduled' 
+    });
+
+    session.status = 'converted';
+    await session.save();
+
+    if (session.linkedLeadId) {
+      await MarketingLead.findByIdAndUpdate(session.linkedLeadId, { status: 'converted' });
+    }
+
+    return res.status(200).json({ 
+        success: true, 
+        message: "Order Confirmed", 
+        userId: user._id,
+        orderId: newOrder.orderId,
+        redirectUrl: '/order-success' 
+    });
+
+  } catch (error) {
+    console.error("Migration Error:", error);
+    return res.status(500).json({ error: "Order Creation Failed" });
+  }
 };

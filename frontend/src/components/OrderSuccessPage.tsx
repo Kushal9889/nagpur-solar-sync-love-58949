@@ -9,19 +9,54 @@ const OrderSuccessPage = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const paymentIntentClientSecret = searchParams.get('payment_intent_client_secret');
+  const paymentIntentId = searchParams.get('payment_intent');
 
   useEffect(() => {
-    // Clear the session so they can start fresh next time
-    localStorage.removeItem("funnel_session_id");
-    localStorage.removeItem("solar_session_id");
-    
-    // Simply show success after a brief delay (Stripe webhook handles the backend)
-    const timer = setTimeout(() => {
-      setStatus('success');
-    }, 1500);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    const finalizeOrder = async () => {
+      const sessionId = localStorage.getItem("solar_session_id");
+      
+      // If no session, maybe we just refreshed the page. 
+      // If no paymentIntentId, maybe we are testing or it's a different flow.
+      if (!sessionId || !paymentIntentId) {
+          // Fallback: Just show success if we lack data to verify, 
+          // assuming webhook handled it or it's a revisit.
+          setStatus('success'); 
+          return;
+      }
+
+      try {
+          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+          const res = await fetch(`${API_URL}/api/funnel/verify-payment`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId, paymentIntentId })
+          });
+          
+          const data = await res.json();
+          
+          if (data.success || data.message === "Order already processed") {
+              // CRITICAL: Save User ID for Profile
+              if (data.userId) {
+                  localStorage.setItem('solar_user_id', data.userId);
+              }
+              
+              // Clear temporary session data
+              localStorage.removeItem("funnel_session_id");
+              localStorage.removeItem("solar_session_id");
+              
+              setStatus('success');
+          } else {
+              console.error("Migration failed:", data);
+              setStatus('error');
+          }
+      } catch (err) {
+          console.error("Finalize Order Error:", err);
+          setStatus('error');
+      }
+    };
+
+    finalizeOrder();
+  }, [paymentIntentId]);
 
   if (status === 'loading') {
     return (
