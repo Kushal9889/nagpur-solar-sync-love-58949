@@ -7,23 +7,15 @@ import { useToast } from "@/hooks/use-toast";
 interface DocumentUploadProps {
   label: string;
   onUploadComplete?: (key: string) => void;
+  sessionId?: string; // [NEW] Allow passing the Real ID
 }
 
-export const DocumentUpload: React.FC<DocumentUploadProps> = ({ label, onUploadComplete }) => {
+export const DocumentUpload: React.FC<DocumentUploadProps> = ({ label, onUploadComplete, sessionId }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem('funnel_session_id');
-    if (!sessionId) {
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('funnel_session_id', sessionId);
-    }
-    return sessionId;
-  };
 
   const handleFileSelect = async (file: File) => {
     if (!file) return;
@@ -52,12 +44,19 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ label, onUploadC
     setIsUploading(true);
 
     try {
-      const sessionId = getSessionId();
+      // [FIX] USE THE REAL SESSION ID
+      // Priority: Prop > localStorage(solar) > Error
+      const activeSessionId = sessionId || localStorage.getItem('solar_session_id');
+      
+      if (!activeSessionId) {
+        throw new Error("No active session found. Please refresh the page.");
+      }
+
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
       // Step 1: Get the upload URL from backend
       const urlResponse = await fetch(
-        `${apiUrl}/api/funnel/upload-url?sessionId=${sessionId}&fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}`
+        `${apiUrl}/api/funnel/upload-url?sessionId=${activeSessionId}&fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}`
       );
       
       const urlData = await urlResponse.json();
@@ -76,7 +75,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ label, onUploadC
       });
 
       if (!uploadResponse.ok) {
-        throw new Error("Upload failed");
+        throw new Error("Upload failed. Server rejected the file.");
       }
 
       // Success!

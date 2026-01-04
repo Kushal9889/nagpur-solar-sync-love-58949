@@ -15,9 +15,12 @@ if (IS_LOCAL) {
 
 export const getUploadUrl = async (key: string, contentType: string) => {
   if (IS_LOCAL) {
-    // 🏠 LOCAL MODE: Return a URL that points to our own server
-    // The frontend will PUT to this, and we need a route to handle it.
-    return `http://localhost:3000/api/funnel/local-upload?key=${key}`;
+    // 🏠 DYNAMIC LOCAL MODE
+    // Determine the base URL dynamically based on environment or default to localhost
+    // On Render, 'RENDER_EXTERNAL_URL' is automatically set.
+    const baseUrl = process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000';
+    
+    return `${baseUrl}/api/funnel/local-upload?key=${key}`;
   } else {
     // ☁️ CLOUD MODE: Real AWS S3
     const client = new S3Client({ region: process.env.AWS_REGION });
