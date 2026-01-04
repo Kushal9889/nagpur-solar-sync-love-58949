@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import path from "path";
@@ -30,5 +30,28 @@ export const getUploadUrl = async (key: string, contentType: string) => {
       ContentType: contentType,
     });
     return await getSignedUrl(client, command, { expiresIn: 60 });
+  }
+};
+
+// [NEW] OPTIMIZATION: Physical Deletion
+export const deleteFile = async (key: string) => {
+  const IS_LOCAL = !process.env.AWS_ACCESS_KEY_ID;
+
+  if (IS_LOCAL) {
+    // 🏠 LOCAL DELETE (Save Disk Space)
+    const filePath = path.join(process.cwd(), "uploads", key); // Key includes folder structure
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath); // <--- THE MEMORY SAVER
+      console.log(`🗑️ Deleted local file: ${filePath}`);
+    }
+  } else {
+    // ☁️ CLOUD DELETE (Save AWS Bill)
+    const client = new S3Client({ region: process.env.AWS_REGION });
+    const command = new DeleteObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: key,
+    });
+    await client.send(command);
+    console.log(`🗑️ Deleted S3 file: ${key}`);
   }
 };

@@ -541,42 +541,46 @@ const PaymentBookingPage: React.FC<PaymentBookingPageProps> = ({ data, onBack })
                   {/* REAL FUNCTIONAL UPLOADS */}
                   <DocumentUpload 
                     label="Driver's License / State ID" 
+                    sessionId={state?.sessionId}
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'state-id': true}));
-                      // Cache locally
-                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
-                      current['state-id'] = key;
-                      localStorage.setItem('cached_docs', JSON.stringify(current));
+                      saveDocument('state-id', key);
                     }}
                   />
                   <DocumentUpload 
                     label="Utility Bill (Latest)" 
+                    docType="utility-bill"
+                    sessionId={state?.sessionId}
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'utility-bill': true}));
-                      // Cache locally
-                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
-                      current['utility-bill'] = key;
-                      localStorage.setItem('cached_docs', JSON.stringify(current));
+                      saveDocument('utility-bill', key);
+                    }}
+                    onDeleteComplete={() => {
+                      setUploadedDocs(prev => ({...prev, 'utility-bill': false}));
                     }}
                   />
                   <DocumentUpload 
                     label="Property Tax Receipt" 
+                    docType="property-tax"
+                    sessionId={state?.sessionId}
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'property-tax': true}));
-                      // Cache locally
-                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
-                      current['property-tax'] = key;
-                      localStorage.setItem('cached_docs', JSON.stringify(current));
+                      saveDocument('property-tax', key);
+                    }}
+                    onDeleteComplete={() => {
+                      setUploadedDocs(prev => ({...prev, 'property-tax': false}));
                     }}
                   />
                   <DocumentUpload 
                     label="Rooftop Photos" 
+                    docType="rooftop-photos"
+                    sessionId={state?.sessionId}
                     onUploadComplete={(key) => {
                       setUploadedDocs(prev => ({...prev, 'rooftop-photos': true}));
-                      // Cache locally
-                      const current = JSON.parse(localStorage.getItem('cached_docs') || '{}');
-                      current['rooftop-photos'] = key;
-                      localStorage.setItem('cached_docs', JSON.stringify(current));
+                      saveDocument('rooftop-photos', key);
+                    }}
+                    onDeleteComplete={() => {
+                      setUploadedDocs(prev => ({...prev, 'rooftop-photos': false}));
                     }}
                   />
                 </div>

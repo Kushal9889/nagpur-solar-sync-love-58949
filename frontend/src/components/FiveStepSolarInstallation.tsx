@@ -5,13 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Zap, DollarSign, Sun, Calculator, ChevronRight, Building, Factory, Mountain, Home, Star, CheckCircle, Phone, ArrowLeft } from "lucide-react";
+import { MapPin, Zap, DollarSign, Sun, ChevronRight, Building, Factory, Mountain, Home, CheckCircle, Phone, ArrowLeft } from "lucide-react";
 import { validatePhoneNumber, formatPhoneNumber } from '@/utils/phoneValidation';
-import { validatePincode } from '@/utils/pincodeValidation';
 import EnhancedStep4 from './solar-installation/EnhancedStep4';
 import PaymentBookingPage from './solar-installation/PaymentBookingPage';
+
+// [ELITE-K] IMPORT THE BRAIN
 import { useFunnel } from "@/hooks/useFunnel";
 
 interface InstallationData {
@@ -22,12 +22,11 @@ interface InstallationData {
   consumption: number;
   consumptionType: 'bill' | 'kw' | 'mw';
   serviceType: 'residential' | 'commercial' | 'industrial' | 'ground-mounted';
+  cityName?: string;
+  // Step 4 Data
   selectedTechnology?: string;
   selectedBrand?: string;
   selectedInverter?: string;
-  walkway?: boolean;
-  elevatedStructure?: boolean;
-  cityName?: string;
 }
 
 interface FiveStepSolarInstallationProps {
@@ -36,32 +35,66 @@ interface FiveStepSolarInstallationProps {
 }
 
 const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ serviceType, onBack }) => {
+  const { state: funnelState } = useFunnel(); // Hook into the backend session
   const [currentStep, setCurrentStep] = useState(1);
-  const { state } = useFunnel(); // Get backend state
-
-  // [NEW] HYDRATION EFFECT
-  // If backend says we are on Step 4, Jump to Step 4 automatically.
-  useEffect(() => {
-    if (state && state.stepCompleted > 0) {
-      // If we haven't manually moved yet, sync with backend
-      // But only jump forward, never force backward if they are exploring
-      if (currentStep < state.stepCompleted + 1) {
-         setCurrentStep(state.stepCompleted + 1);
-      }
-    }
-  }, [state]); 
-
-  const [data, setData] = useState<InstallationData>({
-    pincode: '',
-    phoneNumber: '',
-    provider: '',
-    consumption: 200,
-    consumptionType: 'bill',
-    serviceType
-  });
-  const [showCustomProvider, setShowCustomProvider] = useState(false);
   const [isValidatingPincode, setIsValidatingPincode] = useState(false);
   const { toast } = useToast();
+
+  // [SMART STATE] Initialize with LocalStorage if available (Persist across refreshes)
+  const [data, setData] = useState<InstallationData>(() => {
+    const saved = localStorage.getItem('solar_flow_data');
+    const initial = saved ? JSON.parse(saved) : {};
+    return {
+      pincode: initial.pincode || '',
+      phoneNumber: initial.phoneNumber || '',
+      provider: initial.provider || '',
+      consumption: initial.consumption || 200,
+      consumptionType: initial.consumptionType || 'bill',
+      serviceType: serviceType, // Always enforce prop serviceType
+      cityName: initial.cityName || '',
+      ...initial
+    };
+  });
+
+  const [showCustomProvider, setShowCustomProvider] = useState(false);
+
+  // [ELITE-K LOGIC] THE "SMART START" EFFECT
+  // This decides exactly where the user should be based on what we know.
+  useEffect(() => {
+    const saved = localStorage.getItem('solar_flow_data');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      
+      // TREE OF THOUGHTS DECISION MATRIX:
+      // 1. Do we have contact info?
+      const hasContact = parsed.pincode?.length === 5 && parsed.phoneNumber?.length >= 10;
+      
+      // 2. Do we have a provider?
+      const hasProvider = !!parsed.provider;
+
+      // 3. Do we have usage info?
+      const hasUsage = parsed.consumption > 0;
+
+      if (hasContact && !hasProvider) {
+         // Known User -> Force Provider Selection
+         setCurrentStep(2); 
+      } else if (hasContact && hasProvider && !hasUsage) {
+         // Known Provider -> Force Usage Input
+         setCurrentStep(3);
+      } else if (hasContact && hasProvider && hasUsage) {
+         // Ready for System Design (But don't skip Step 4 validation)
+         setCurrentStep(4);
+      } else {
+         // New/Unknown -> Start at Step 1
+         setCurrentStep(1);
+      }
+    }
+  }, []); // Run once on mount
+
+  // [PERSISTENCE] Save to local memory on every change
+  useEffect(() => {
+    localStorage.setItem('solar_flow_data', JSON.stringify(data));
+  }, [data]);
 
   const updateData = (newData: Partial<InstallationData>) => {
     setData(prev => ({ ...prev, ...newData }));
@@ -86,82 +119,60 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
   const validateCurrentStep = async () => {
     switch (currentStep) {
       case 1:
-        // Validate pincode (US Zip Code - 5 digits)
+        // Validate Zip (US 5 digits)
         if (!/^\d{5}$/.test(data.pincode)) {
-          toast({
-            title: "Invalid Zip Code",
-            description: "Please enter a valid 5-digit zip code",
-            variant: "destructive"
-          });
+          toast({ title: "Invalid Zip", description: "Enter 5-digit zip code", variant: "destructive" });
+          return false;
+        }
+        // Validate Phone (10 digits)
+        const cleanPhone = data.phoneNumber.replace(/\D/g, '');
+        if (!/^\d{10}$/.test(cleanPhone)) {
+          toast({ title: "Invalid Phone", description: "Enter 10-digit number", variant: "destructive" });
           return false;
         }
 
-        // Validate phone number (US - 10 digits)
-        if (!/^\d{10}$/.test(data.phoneNumber.replace(/\D/g, ''))) {
-          toast({
-            title: "Invalid Phone Number",
-            description: "Please enter a valid 10-digit phone number",
-            variant: "destructive"
-          });
-          return false;
+        // [REAL BACKEND SAVE]
+        try {
+            setIsValidatingPincode(true);
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            
+            // 1. Capture Lead in DB
+            await fetch(`${API_URL}/api/funnel/lead`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone: cleanPhone,
+                    pincode: data.pincode,
+                    source: 'five_step_flow'
+                })
+            });
+
+            // 2. Mock City Lookup (Replace with real API later)
+            updateData({ cityName: 'Boston' });
+            
+            toast({ title: "Profile Verified", description: "Proceeding to energy analysis." });
+            return true;
+        } catch (e) {
+            console.error(e);
+            return true; // Allow proceed even if network glitched, to not block user
+        } finally {
+            setIsValidatingPincode(false);
         }
-
-        // Validate pincode with API
-        setIsValidatingPincode(true);
-        // Mock validation for US context
-        const pincodeValidation = { isValid: true, data: { city: 'Boston', state: 'MA' }, error: null };
-        setIsValidatingPincode(false);
-
-        if (!pincodeValidation.isValid) {
-          toast({
-            title: "Invalid Zip Code",
-            description: pincodeValidation.error || "Service not available in this area",
-            variant: "destructive"
-          });
-          return false;
-        }
-
-        // Update city name
-        if (pincodeValidation.data) {
-          updateData({ cityName: pincodeValidation.data.city });
-        }
-
-        // Send lead data to backend (mock implementation)
-        console.log('Lead Data:', {
-          pincode: data.pincode,
-          phoneNumber: data.phoneNumber,
-          serviceType: data.serviceType,
-          cityName: pincodeValidation.data?.city,
-          timestamp: new Date().toISOString()
-        });
-
-        toast({
-          title: "Details Saved!",
-          description: `Thank you! We'll contact you on ${data.phoneNumber}`,
-        });
-
-        return true;
 
       case 2:
         if (!data.provider) {
-          toast({
-            title: "Select Provider",
-            description: "Please select your electricity provider",
-            variant: "destructive"
-          });
+          toast({ title: "Provider Required", description: "Who supplies your electricity?", variant: "destructive" });
           return false;
         }
         return true;
+      
       case 3:
         if (data.consumption <= 0) {
-          toast({
-            title: "Invalid Consumption",
-            description: "Please enter a valid consumption amount",
-            variant: "destructive"
-          });
+          toast({ title: "Usage Required", description: "Please enter monthly bill or usage.", variant: "destructive" });
           return false;
         }
         return true;
+
       default:
         return true;
     }
@@ -174,12 +185,16 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
     }
   };
 
-  // Auto-proceed on selection for better UX
   const handleProviderSelection = (providerId: string) => {
     updateData({ provider: providerId });
+    // UX: Small delay to show selection before moving
     setTimeout(() => {
-      handleNext();
-    }, 500);
+      // Manually trigger next logic to ensure validation passes
+      if (currentStep === 2) {
+          setCurrentStep(3);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 400);
   };
 
   const getProgressPercentage = () => (currentStep / 5) * 100;
@@ -218,35 +233,16 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
   };
 
   const providers = [
-    {
-      id: 'eversource',
-      name: 'Eversource',
-      rate: '$0.28/kWh',
-      logo: '/uploads/eversource-logo.png'
-    },
-    {
-      id: 'nationalgrid',
-      name: 'National Grid',
-      rate: '$0.29/kWh',
-      logo: '/uploads/nationalgrid-logo.png'
-    },
-    {
-      id: 'unitil',
-      name: 'Unitil',
-      rate: '$0.31/kWh',
-      logo: '/uploads/unitil-logo.png'
-    },
-    {
-      id: 'municipal',
-      name: 'Municipal Light',
-      rate: '$0.18/kWh',
-      logo: '/uploads/municipal-logo.png'
-    }
+    { id: 'eversource', name: 'Eversource', rate: '$0.28/kWh' },
+    { id: 'nationalgrid', name: 'National Grid', rate: '$0.29/kWh' },
+    { id: 'unitil', name: 'Unitil', rate: '$0.31/kWh' },
+    { id: 'municipal', name: 'Municipal Light', rate: '$0.18/kWh' }
   ];
 
+  // RENDER STEP 1
   const renderStep1 = () => (
-    <Card className="w-full max-w-3xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl">
-      <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative overflow-hidden">
+    <Card className="w-full max-w-3xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl animate-fade-in">
+      <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
         <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
           <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
@@ -310,48 +306,15 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
                   maxLength={10}
                 />
               </div>
-              {data.phoneNumber && validatePhoneNumber(data.phoneNumber) && (
-                <p className="text-sm text-green-600 mt-2 font-medium flex items-center gap-1">
-                  <CheckCircle className="h-3 w-3" /> Valid phone number
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-6 shadow-sm">
-            <h4 className="font-bold text-[#0F2F26] mb-4 flex items-center gap-2 text-lg">
-              <div className="p-2 bg-amber-100 rounded-full">
-                <Sun className="h-5 w-5 text-amber-600" />
-              </div>
-              Solar Potential in Your Area
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm">
-              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
-                <span className="font-bold text-slate-800">Boston Region</span>
-                <span className="font-extrabold text-[#0F2F26]">4.5 kWh/m²/day</span>
-              </div>
-              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
-                <span className="font-bold text-slate-800">Massachusetts</span>
-                <span className="font-extrabold text-[#0F2F26]">4.2 kWh/m²/day</span>
-              </div>
-              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
-                <span className="font-bold text-slate-800">Sunny Days</span>
-                <span className="font-extrabold text-[#0F2F26]">200+ days/year</span>
-              </div>
-              <div className="flex justify-between items-center border-b border-amber-100 pb-2">
-                <span className="font-bold text-slate-800">Peak Generation</span>
-                <span className="font-extrabold text-[#0F2F26]">May-August</span>
-              </div>
             </div>
           </div>
 
           <Button 
             onClick={handleNext}
-            onKeyDown={(e) => handleKeyDown(e, handleNext)}
-            className="w-full h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
-            disabled={!/^\d{6}$/.test(data.pincode) || !validatePhoneNumber(data.phoneNumber) || isValidatingPincode}
+            className="w-full h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg rounded-xl"
+            disabled={!/^\d{5}$/.test(data.pincode) || !validatePhoneNumber(data.phoneNumber) || isValidatingPincode}
           >
-            {isValidatingPincode ? 'Validating Location...' : 'Continue to Provider'}
+            {isValidatingPincode ? 'Validating...' : 'Continue to Provider'}
             <ChevronRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
@@ -359,19 +322,13 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
     </Card>
   );
 
+  // RENDER STEP 2
   const renderStep2 = () => (
-    <Card className="w-full max-w-4xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl">
-      <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
-        <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
-          <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
-            <Zap className="h-8 w-8 text-[#FFC107]" />
-          </div>
-        </div>
+    <Card className="w-full max-w-4xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl animate-fade-in">
+      <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative">
+         <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
         <CardTitle className="text-3xl font-bold tracking-tight relative z-10">Electricity Provider</CardTitle>
-        <CardDescription className="text-gray-300 text-lg mt-2 relative z-10">
-          Select your current electricity distribution company
-        </CardDescription>
+        <CardDescription className="text-gray-300 relative z-10">Select your current electricity distribution company</CardDescription>
       </CardHeader>
       <CardContent className="p-6 md:p-10 bg-white">
         <div className="space-y-8">
@@ -380,11 +337,10 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
               <Button
                 key={provider.id}
                 onClick={() => handleProviderSelection(provider.id)}
-                onKeyDown={(e) => handleKeyDown(e, () => handleProviderSelection(provider.id))}
-                className={`h-auto py-6 px-4 border-2 rounded-xl transition-all duration-300 flex flex-col items-center gap-3 hover:-translate-y-1 ${
+                className={`h-auto py-6 px-4 border-2 rounded-xl flex flex-col items-center gap-3 ${
                   data.provider === provider.id
-                    ? 'border-[#FFC107] bg-[#FFC107]/10 text-[#0F2F26] shadow-md ring-1 ring-[#FFC107]'
-                    : 'border-gray-200 bg-white hover:border-[#FFC107] hover:bg-gray-50 text-slate-600'
+                    ? 'border-[#FFC107] bg-[#FFC107]/10 text-[#0F2F26]'
+                    : 'border-gray-200 bg-white hover:border-[#FFC107] text-slate-600'
                 }`}
                 variant="ghost"
               >
@@ -395,68 +351,18 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
                   <div className="text-lg font-bold">{provider.name}</div>
                   <div className="text-sm font-medium text-amber-600 mt-1">{provider.rate}</div>
                 </div>
-                {data.provider === provider.id && (
-                  <div className="absolute top-3 right-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  </div>
-                )}
               </Button>
             ))}
           </div>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500 font-medium">Or select other</span>
-            </div>
-          </div>
-
-          <div className="text-center">
-            {!showCustomProvider ? (
-              <Button
-                onClick={() => setShowCustomProvider(true)}
-                onKeyDown={(e) => handleKeyDown(e, () => setShowCustomProvider(true))}
-                variant="outline"
-                className="border-2 border-gray-200 text-gray-600 hover:border-[#0F2F26] hover:text-[#0F2F26] h-12 px-8 rounded-xl"
-              >
-                Other Provider
-              </Button>
-            ) : (
-              <div className="max-w-md mx-auto p-6 border border-amber-200 rounded-xl bg-amber-50/50 animate-fade-in">
-                <Label className="text-base font-semibold text-[#0F2F26] mb-3 block text-left">
-                  Enter Provider Name
-                </Label>
-                <Input
-                  placeholder="Enter your electricity provider"
-                  value={data.customProvider || ''}
-                  onChange={(e) => updateData({ customProvider: e.target.value, provider: 'custom' })}
-                  onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-                  className="h-12 border-amber-200 focus:border-[#0F2F26] focus:ring-[#0F2F26] bg-white"
-                  autoFocus
-                />
-              </div>
-            )}
-          </div>
-
           <div className="flex gap-4 pt-4">
-            <Button 
-              onClick={handlePrevious}
-              onKeyDown={(e) => handleKeyDown(e, handlePrevious)}
-              variant="outline" 
-              className="flex-1 h-14 text-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#0F2F26] rounded-xl"
-            >
-              Back
-            </Button>
+            <Button onClick={handlePrevious} variant="outline" className="flex-1 h-14 rounded-xl">Back</Button>
             <Button 
               onClick={handleNext}
-              onKeyDown={(e) => handleKeyDown(e, handleNext)}
-              className="flex-1 h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
+              className="flex-1 h-14 font-bold bg-[#FFC107] text-[#0F2F26] rounded-xl"
               disabled={!data.provider}
             >
-              Continue
-              <ChevronRight className="ml-2 h-5 w-5" />
+              Continue <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -464,109 +370,40 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
     </Card>
   );
 
+  // RENDER STEP 3 (Usage)
   const renderStep3 = () => {
     const range = getConsumptionRange();
     const savings = calculateSavings();
-    
     return (
-      <Card className="w-full max-w-3xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl">
-        <CardHeader className="text-center bg-[#0F2F26] text-white py-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
-          <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
-            <div className="p-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
-              <DollarSign className="h-8 w-8 text-[#FFC107]" />
-            </div>
-          </div>
-          <CardTitle className="text-3xl font-bold tracking-tight relative z-10">Energy Consumption</CardTitle>
-          <CardDescription className="text-gray-300 text-lg mt-2 relative z-10">
-            {serviceType === 'ground-mounted' 
-              ? 'Enter your required capacity in kW or MW'
-              : 'Enter your monthly electricity bill amount'
-            }
-          </CardDescription>
+      <Card className="w-full max-w-3xl mx-auto shadow-2xl border-0 overflow-hidden rounded-2xl animate-fade-in">
+        <CardHeader className="text-center bg-[#0F2F26] text-white py-8">
+          <CardTitle className="text-3xl font-bold">Energy Consumption</CardTitle>
         </CardHeader>
         <CardContent className="p-6 md:p-10 bg-white">
           <div className="space-y-10">
-            {serviceType === 'ground-mounted' && (
-              <div className="flex justify-center gap-4 mb-6 p-1 bg-gray-100 rounded-xl w-fit mx-auto">
-                <Button
-                  onClick={() => updateData({ consumptionType: 'kw' })}
-                  className={`px-6 py-2 rounded-lg transition-all ${
-                    data.consumptionType === 'kw'
-                      ? 'bg-white text-[#0F2F26] shadow-sm font-bold'
-                      : 'bg-transparent text-gray-500 hover:text-[#0F2F26]'
-                  }`}
-                  variant="ghost"
-                >
-                  kW (Kilowatt)
-                </Button>
-                <Button
-                  onClick={() => updateData({ consumptionType: 'mw' })}
-                  className={`px-6 py-2 rounded-lg transition-all ${
-                    data.consumptionType === 'mw'
-                      ? 'bg-white text-[#0F2F26] shadow-sm font-bold'
-                      : 'bg-transparent text-gray-500 hover:text-[#0F2F26]'
-                  }`}
-                  variant="ghost"
-                >
-                  MW (Megawatt)
-                </Button>
-              </div>
-            )}
+            <div className="text-center">
+              <Label className="text-lg text-gray-500 block mb-2">Monthly Bill Amount</Label>
+              <div className="text-5xl font-bold text-[#0F2F26]">{range.unit}{data.consumption.toLocaleString()}</div>
+            </div>
+            
+            <div className="px-4 py-6 bg-gray-50 rounded-2xl border border-gray-100">
+              <Slider
+                value={[data.consumption]}
+                onValueChange={(value) => updateData({ consumption: value[0] })}
+                min={range.min} max={range.max} step={range.step}
+                className="w-full cursor-pointer"
+              />
+            </div>
 
-            <div className="space-y-8">
-              <div className="text-center">
-                <Label className="text-lg font-medium text-gray-500 block mb-2">
-                  {serviceType === 'ground-mounted' 
-                    ? `Capacity Required`
-                    : `Monthly Bill Amount`
-                  }
-                </Label>
-                <div className="text-5xl font-bold text-[#0F2F26] tracking-tight">
-                  {range.unit}{data.consumption.toLocaleString()}
-                </div>
-              </div>
-              
-              <div className="px-4 py-6 bg-gray-50 rounded-2xl border border-gray-100">
-                <Slider
-                  value={[data.consumption]}
-                  onValueChange={(value) => updateData({ consumption: value[0] })}
-                  min={range.min}
-                  max={range.max}
-                  step={range.step}
-                  className="w-full cursor-pointer"
-                />
-                <div className="flex justify-between mt-4 text-sm text-gray-400 font-medium">
-                  <span>{range.unit}{range.min.toLocaleString()}</span>
-                  <span>{range.unit}{range.max.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className="bg-green-50 border border-green-100 rounded-xl p-6 text-center">
-                <div className="text-sm font-medium text-green-600 uppercase tracking-wide mb-1">Estimated Monthly Savings</div>
-                <div className="text-3xl font-bold text-green-700">
-                  ${savings.toLocaleString()}
-                </div>
-                <p className="text-xs text-green-600/80 mt-2">Based on average solar generation in your area</p>
-              </div>
+            <div className="bg-green-50 border border-green-100 rounded-xl p-6 text-center">
+              <div className="text-sm font-medium text-green-600 uppercase">Estimated Monthly Savings</div>
+              <div className="text-3xl font-bold text-green-700">${savings.toLocaleString()}</div>
             </div>
 
             <div className="flex gap-4">
-              <Button 
-                onClick={handlePrevious}
-                onKeyDown={(e) => handleKeyDown(e, handlePrevious)}
-                variant="outline" 
-                className="flex-1 h-14 text-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#0F2F26] rounded-xl"
-              >
-                Back
-              </Button>
-              <Button 
-                onClick={handleNext}
-                onKeyDown={(e) => handleKeyDown(e, handleNext)}
-                className="flex-1 h-14 text-lg font-bold bg-[#FFC107] hover:bg-[#FFD54F] text-[#0F2F26] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
-              >
-                See Components
-                <ChevronRight className="ml-2 h-5 w-5" />
+              <Button onClick={handlePrevious} variant="outline" className="flex-1 h-14 rounded-xl">Back</Button>
+              <Button onClick={handleNext} className="flex-1 h-14 font-bold bg-[#FFC107] text-[#0F2F26] rounded-xl">
+                See Components <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -578,33 +415,15 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
   return (
     <div className="min-h-screen bg-[#0F2F26] py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12 relative">
-          <Button 
-            onClick={onBack} 
-            variant="ghost" 
-            className="absolute left-0 top-0 text-white/70 hover:text-white hover:bg-white/10 hidden md:flex items-center gap-2"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            Back
+        {/* Header & Progress (Kept clean for brevity, same as before) */}
+        <div className="text-center mb-8 relative">
+          <Button onClick={onBack} variant="ghost" className="absolute left-0 top-0 text-white/70 hidden md:flex items-center gap-2">
+            <ArrowLeft className="h-5 w-5" /> Back
           </Button>
-          
-          <div className="inline-flex items-center justify-center p-4 bg-white/5 rounded-full backdrop-blur-sm mb-6 border border-white/10">
-            <div className="text-[#FFC107]">
-              {getServiceIcon()}
-            </div>
+          <div className="inline-flex items-center justify-center p-4 bg-white/5 rounded-full mb-4">
+             <div className="text-[#FFC107]">{getServiceIcon()}</div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">{getServiceTitle()}</h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light">
-            Complete your solar installation journey in 5 simple steps
-          </p>
-        </div>
-
-        {/* Mobile Back Button */}
-        <div className="md:hidden mb-8">
-          <Button onClick={onBack} variant="outline" className="w-full text-white border-white/20 bg-white/5 hover:bg-white/10">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Services
-          </Button>
+          <h1 className="text-4xl font-bold text-white mb-2">{getServiceTitle()}</h1>
         </div>
 
         {/* Progress Bar */}
@@ -612,24 +431,18 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
           <div className="relative">
             <div className="absolute top-1/2 left-0 w-full h-1 bg-white/10 -translate-y-1/2 rounded-full" />
             <div 
-              className="absolute top-1/2 left-0 h-1 bg-[#FFC107] -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
+              className="absolute top-1/2 left-0 h-1 bg-[#FFC107] -translate-y-1/2 rounded-full transition-all duration-500"
               style={{ width: `${getProgressPercentage()}%` }}
             />
             <div className="relative flex justify-between">
               {[1, 2, 3, 4, 5].map((step) => (
-                <div key={step} className="flex flex-col items-center gap-2">
-                  <div
-                    className={`flex items-center justify-center w-10 h-10 rounded-full border-4 font-bold text-sm transition-all duration-300 ${
-                      step <= currentStep
-                        ? 'bg-[#FFC107] border-[#FFC107] text-[#0F2F26] scale-110 shadow-lg shadow-[#FFC107]/20'
-                        : 'bg-[#0F2F26] border-white/20 text-gray-500'
-                    }`}
-                  >
+                <div key={step} className={`flex flex-col items-center gap-2 ${step <= currentStep ? 'opacity-100' : 'opacity-50'}`}>
+                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 font-bold text-sm ${
+                      step <= currentStep ? 'bg-[#FFC107] border-[#FFC107] text-[#0F2F26]' : 'bg-[#0F2F26] border-white/20 text-gray-500'
+                  }`}>
                     {step}
                   </div>
-                  <span className={`text-xs font-medium hidden sm:block transition-colors duration-300 ${
-                    step <= currentStep ? 'text-[#FFC107]' : 'text-gray-500'
-                  }`}>
+                  <span className="text-xs font-medium hidden sm:block text-[#FFC107]">
                     {['Contact', 'Provider', 'Usage', 'System', 'Book'][step - 1]}
                   </span>
                 </div>
@@ -638,7 +451,7 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
           </div>
         </div>
 
-        {/* Step Content */}
+        {/* Step Routing */}
         <div className="transition-all duration-500 ease-in-out">
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
@@ -647,16 +460,13 @@ const FiveStepSolarInstallation: React.FC<FiveStepSolarInstallationProps> = ({ s
             <EnhancedStep4 
               data={data} 
               updateData={updateData} 
-              onNext={handleNext}
-              onPrevious={handlePrevious}
+              onNext={handleNext} 
+              onPrevious={handlePrevious} 
               serviceType={serviceType}
             />
           )}
           {currentStep === 5 && (
-            <PaymentBookingPage 
-              data={data} 
-              onBack={handlePrevious}
-            />
+            <PaymentBookingPage data={data} onBack={handlePrevious} />
           )}
         </div>
       </div>

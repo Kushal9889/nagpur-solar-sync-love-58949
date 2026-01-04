@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Stripe from 'stripe';
 import path from 'path';
 import fs from 'fs';
-import { getUploadUrl } from "../services/storage";
+import { getUploadUrl, deleteFile } from "../services/storage";
 import { Order } from "../models/order";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {});
@@ -359,5 +359,44 @@ export const verifyPaymentAndMigrate = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Migration Error:", error);
     return res.status(500).json({ error: "Order Creation Failed" });
+  }
+};
+
+// ==========================================
+// 6. DELETE DOCUMENT (CRUD - Optimization)
+// ==========================================
+export const deleteDocument = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, docType } = req.body; // e.g. "state-id"
+    
+    // 1. Find Session
+    const session = await OrderSession.findOne({ sessionId });
+    if (!session) return res.status(404).json({ error: "Session not found" });
+
+    // 2. Identify File Key
+    // Check if documents exists and has the key
+    // Note: documents is a Map in Mongoose, so we use .get()
+    const currentFileKey = session.documents ? session.documents.get(docType) : null;
+
+    if (currentFileKey) {
+      // 3. PHYSICAL DELETE (Clear Memory)
+      await deleteFile(currentFileKey);
+      
+      // 4. DB UPDATE (Remove Reference)
+      // We use $unset to remove the specific field from the documents map/object
+      const updatePath = `documents.${docType}`;
+      await OrderSession.updateOne(
+        { sessionId }, 
+        { $unset: { [updatePath]: "" } }
+      );
+      
+      return res.json({ success: true, message: "File deleted & memory freed" });
+    }
+
+    return res.status(400).json({ error: "No document found to delete" });
+
+  } catch (error) {
+    console.error("Delete Error:", error);
+    return res.status(500).json({ error: "Delete failed" });
   }
 };

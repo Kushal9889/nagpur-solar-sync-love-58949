@@ -1,5 +1,5 @@
 import express from "express";
-import { captureLead, syncSessionState, getSecureUploadUrl, createPaymentIntent, verifyPaymentAndMigrate, handleLocalUpload } from "../controllers/funnelController";
+import { captureLead, syncSessionState, getSecureUploadUrl, createPaymentIntent, verifyPaymentAndMigrate, handleLocalUpload, deleteDocument } from "../controllers/funnelController";
 
 const router = express.Router();
 
@@ -22,6 +22,10 @@ router.post("/create-payment", createPaymentIntent);
 // 5. Verify Payment & Migrate
 // POST /api/funnel/verify-payment
 router.post("/verify-payment", verifyPaymentAndMigrate);
+
+// 6. Delete Document
+// POST /api/funnel/document/delete
+router.post("/document/delete", deleteDocument);
 
 // LOCAL DEV ONLY: Handle the PUT request mimicking S3
 router.put("/local-upload", handleLocalUpload);
