@@ -2,7 +2,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import path from "path";
-
+ ☁️ CLOUD MODE: Real AWS S3
 const IS_LOCAL = !process.env.AWS_ACCESS_KEY_ID; // Auto-detect mode
 
 // Ensure local uploads folder exists
@@ -18,11 +18,12 @@ export const getUploadUrl = async (key: string, contentType: string) => {
     // 🏠 DYNAMIC LOCAL MODE
     // Determine the base URL dynamically based on environment or default to localhost
     // On Render, 'RENDER_EXTERNAL_URL' is automatically set.
-    const baseUrl = process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000';
+    const baseUrl = process.env.RENDER_EXTERNAL_URL || 
+                    (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : 'http://localhost:3000');
     
     return `${baseUrl}/api/funnel/local-upload?key=${key}`;
   } else {
-    // ☁️ CLOUD MODE: Real AWS S3
+    //
     const client = new S3Client({ region: process.env.AWS_REGION });
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
